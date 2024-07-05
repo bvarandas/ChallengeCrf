@@ -21,20 +21,30 @@ Usando  **Filas do RabbiMQ** para coreografia do ambiente - Importante na quanti
 
 **Protobuf** para compactação na camada de transporte entre serviços (Array de Bytes)- Importante na compactação das mensagens para transporte e para melhor armazenamento e envio pelo RabbitMQ.
 
+**Ocelot** - Importante para Proxy reverso em ambiente DMZ. Ele também pode gerenciar e validar conexões Sginalr e websocket, validando se o cliente é válido ou não, antes de chegar no ambiente de backend.
+
+**Docker** - Para colocar parte a aplicação, ou aplicação inteira em containers. Porém, o ideal aqui é somente escalabilizar parte da aplicação. 
+
+**Kubernetes** - para orquestração dos containers. Porém, o ideal aqui é somente escalabilizar parte da aplicação. 
+
 **SignalR** no response do para o client/Angular.(Tela) - Importante para recebimento assincrono das informações de Consolidado Diário e  Lançamento de Fluxo de caixa na tela.
 
 **Entity Framework** - Facilidade e rapidez na implementação. Hoje a perfomance  muito está muito satisfatória e a capacidade de gravação em lote. 
 
 **MongoDB** - NoSQL com Facilidade e rapidez na implementação. Ótima Perfomance e a capacidade de gravação em lote. O MongoDB também conta com conexões transacionadas. 
 
-**Essa abordagem também restringe que cada serviço tenha sua responsabilidade separadamente, garantindo a coesão da programação e também mantendo suas lógicas desacopladas.**
----
+**ElasticSearch** - Para centralização dos logs. Não ter acesso a logs, não só prejudica o time de tecnologia no SLA, mas também tira a dinamicidade da empresa em dar uma resposta ao cliente, caso alguma coisa não saia como esperado.
 
+**Kibana** - Importante para visualização dos logs de modo padronizado e com ampla gama de funcionalidades de dashboards.
+
+
+
+**Essa abordagem também restringe que cada serviço tenha sua responsabilidade separadamente, garantindo a coesão da programação (Código) e também mantendo suas lógicas de negócio   desacopladas. Melhorando não só a perfomance, mas também o aperfeiçoando a mantenabilidade. Também, é possível notar no diagrama que é possível viabilizar e escala somente uma parte do sistema**
+---
 
 Modelo da arquitetura C4
 
-
-![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/a96c3abb-1dcb-4396-be77-52005d921012)
+![arq_crf_gif](https://github.com/bvarandas/ChallengeCrf/assets/13907905/628331bc-8116-4088-a7e7-18749501f89f)
 
 ---
 
@@ -73,15 +83,14 @@ Telas do app
 Instruções para rodar
 
 Setar o visual Studio para rodar o docker compose
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/f291af70-68bf-4391-9af9-b83890a04676)
-
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/88e23b2b-814c-4e3e-a182-b8075c4e2234)
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/375a4cbe-f130-4fb7-9706-8bb98bbdc38a)
 
 F5
 
 Irá subir os seguintes containers
 
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/d4553f77-03b2-4128-b6c1-31221a0b52ef)
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/bb70b6b9-dcac-493e-a3da-30dc011b55ef)
+
 
 
 
