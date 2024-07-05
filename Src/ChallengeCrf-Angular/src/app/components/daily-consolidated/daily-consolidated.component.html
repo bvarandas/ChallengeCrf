@@ -1,0 +1,26 @@
+<div class="border boder-light rounded container p-5" >
+    <table class="table tabe-striped table-hover table-sm" *ngIf="dailyConsolidated">
+        <tr class="thead-light">
+            <th>Description</th>
+            <th>Credito</th>
+            <th>Debito</th>
+            <th>Date</th>
+        </tr>
+        <tr *ngFor="let cashflow of dailyConsolidated.cashFlows">
+            <td>{{cashflow.description}}</td>
+            <td *ngIf="cashflow.entry=='Credito'" style="color: green;">{{cashflow.amount}}</td>
+            <td *ngIf="cashflow.entry!='Credito'"></td>
+            <td *ngIf="cashflow.entry=='Debito'" style="color:indianred;" >{{cashflow.amount}}</td>
+            <td *ngIf="cashflow.entry!='Debito'"></td>
+            <td>{{ cashflow.date | date:'dd/MM/yyyy' }}</td>
+        </tr>
+        <tfoot>
+            <tr>
+                <td>Consolidado</td>
+                <td>Credito {{dailyConsolidated.amountCredit | number: '1.2-3'}}</td>
+                <td style="color: indianred;">Debito {{dailyConsolidated.amountDebit | number: '1.2-3'}}</td>
+                <td [style.color]="(dailyConsolidated.amountTotal < 0) ? 'indianred' : 'green'" >Total {{dailyConsolidated.amountTotal| number: '1.2-3'}}</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

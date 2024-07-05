@@ -1,0 +1,63 @@
+{
+  "Routes": [
+    //SignalR config
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "UpstreamPathTemplate": "/hubs/{everything}",
+      "DownstreamPathTemplate": "/hubs/{everything}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": "5200"
+        }
+      ]
+    },
+
+    //CashFLow API
+    {
+      "DownstreamPathTemplate": "/api/cashflow/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": "5200"
+        }
+      ],
+      "UpstreamPathTemplate": "/api/cashflow/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    },
+    {
+      "DownstreamPathTemplate": "/api/cashflow",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": "5200"
+        }
+      ],
+      "UpstreamPathTemplate": "/api/cashflow",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    },
+    //Daily Consolidated API
+    {
+      "DownstreamPathTemplate": "/api/dailyconsolidated/",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "host.docker.internal",
+          "Port": "5200"
+        }
+      ],
+      "UpstreamPathTemplate": "/api/dailyconsolidated/",
+      "UpstreamHttpMethod": [ "GET" ],
+      "FileCacheOptions": { "TtlSeconds": 30 }
+    }
+  ],
+
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:9010"
+  }
+}

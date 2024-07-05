@@ -1,0 +1,14 @@
+version : '2.1'
+
+services:
+  challengeb3-angular:
+    image: challengeb3-angular
+    build: .
+    ports:
+      - 8081:80
+    networks:
+      - challenge
+
+networks:
+    challenge:
+        driver: bridge

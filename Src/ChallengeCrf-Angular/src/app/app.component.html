@@ -1,0 +1,10 @@
+<router-outlet>
+<mat-tab-group>
+    <mat-tab [label]="'Cash Flow (Fluxo de caixa)'" >
+        <app-cashflow [cashflows]="cashFlows" ></app-cashflow>
+    </mat-tab>
+    <mat-tab [label]="'Daily conslidated (Consolidado)'">
+        <app-daily-consolidated [dailyConsolidated]="dailyConsolidated"></app-daily-consolidated>
+    </mat-tab>
+</mat-tab-group> 
+</router-outlet>

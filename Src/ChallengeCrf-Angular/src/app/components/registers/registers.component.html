@@ -1,0 +1,96 @@
+<div class="container p-5" *ngIf="visibilidadeTabela">
+    <div class="border boder-light rounded p-5" >
+        <div>
+            <button type="button" class="btn btn-sm btn-secondary"(click)="ExibirFormularioCadastro()" >
+                Novo Registro
+            </button>
+        </div>
+        <hr/>
+        <table class="table tabe-striped table-hover table-sm" *ngIf="registers">
+            <tr class="thead-light">
+                <th>Description</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Ações</th>
+            </tr>
+            <tr *ngFor="let register of registers">
+                <td>{{register.description}}</td>
+                <td>{{register.status}}</td>
+                <td>{{register.date}}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-info" (click)="ExibirFormularioAtualizacao(register.registerId)" >Atualizar</button> |
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="ExibirConfirmacaoExclusao(register.registerId, register.description, conteudoModal)">Excluir</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div class="container p-5" *ngIf="visibilidadeFormulario">
+    <div class="row">
+        <div class="col-6 border boder-light rnded p-5 shadow" *ngIf="formulario">
+            <h6>{{tituloFormulario}}</h6>
+            <hr />
+            <form [formGroup]="formulario" (ngSubmit)="EnviarFormulario()">
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="description" /> 
+                </div>
+
+                <div class="form-group">
+                    <!-- <h4>Basic native select</h4> -->
+                    <label>Status</label>
+                    <mat-form-field appearance="fill">
+                    <!-- <mat-label>Cars</mat-label> -->
+                    <select matNativeControl required formControlName="status">
+                        <option value="Com Defeito">Com Defeito</option>
+                        <option value="Reparado">Reparado</option>
+                        <option value="Em conserto">Em conserto</option>
+                    </select>
+                    </mat-form-field>
+                    <!-- <label>Status</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="status" />  -->
+                </div>
+
+                <div class="form-group">
+                    <label>Date</label>
+                    <input matInput [matDatepicker]="picker" formControlName="date" name="date">
+                    <!-- <mat-hint>MM/DD/YYYY</mat-hint> -->
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                    <!-- <label>Date</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="date" />  -->
+                </div>
+                
+                <div class="container">
+                    <div class="d-flex">
+                        <div class="class="d-inline-block>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Salvar</button>
+                        </div>
+                        <div class="class="d-inline-block>
+                            <button type="button" class="btn btn-sm btn-light" (click)="Voltar()">Voltar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<ng-template #conteudoModal>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Confirmação de Exclusão</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      Prosseguir com a exclusão do {{description}}
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="modalRef.hide()">Não</button>
+        <button type="button" class="btn btn-outline-danger" (click)="RemoverRegistro(registerId)">Sim</button>
+    </div>
+  </ng-template>

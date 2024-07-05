@@ -1,0 +1,93 @@
+version: '3.4'
+
+services:
+  challengecrf.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ElasticConfiguration__Uri=http://elasticsearch:9200"
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+    ports:
+      - "5200:80"
+    networks:
+      - challenge
+
+  challengecrf.queue.worker:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+      - "ElasticConfiguration__Uri=http://elasticsearch:9200"
+    depends_on:
+      - rabbitmq
+      - elasticsearch
+    ports:
+      - "5303:5303"
+    networks:
+      - challenge
+  
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - challenge
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:15672"]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 2
+
+  ocelot.apigateway:
+    container_name: ocelotapigateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development      
+    depends_on:
+#      - identityserver
+      - challengecrf.api
+      - challengecrf.queue.worker
+    ports:
+      - "9010:80"
+  
+  elasticsearch:
+    container_name: elasticsearch
+    environment:
+      - xpack.monitoring.enabled=true
+      - xpack.watcher.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - challenge
+  
+  kibana:
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    ports:
+      - "5601:5601"
+    
+  mongo:    
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+       MONGO_INITDB_ROOT_USERNAME: root
+       MONGO_INITDB_ROOT_PASSWORD: example
+    networks:
+      - challenge
+
+volumes:
+  mongo_data:
+  elasticsearch-data:  
+  
+networks:
+    challenge:
+        driver: bridge

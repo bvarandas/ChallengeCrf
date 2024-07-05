@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "ChallengeCrf.Infra.CrossCutting.Ioc": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:55955;http://localhost:55963"
+    }
+  }
+}

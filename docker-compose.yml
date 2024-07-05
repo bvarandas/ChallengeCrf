@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+           MONGO_INITDB_ROOT_USERNAME: root
+           MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongo_data:/data/db
+
+  ocelot.apigateway:
+    image: ${DOCKER_REGISTRY-}ocelotapigateway
+    build:
+      context: .
+      dockerfile: ApiGateways/Ocelot.ApiGateway/Dockerfile
+
+  challengecrf.api:
+    image: ${DOCKER_REGISTRY-}challengecrfapi
+    build:
+      context: .
+      dockerfile: Src/ChallengeCrf.Api/Dockerfile
+
+  challengecrf.queue.worker:
+    image: ${DOCKER_REGISTRY-}challengecrfqueueworker
+    build:
+      context: .
+      dockerfile: Src/ChallengeCrf.Worker/Dockerfile
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2

@@ -1,0 +1,11 @@
+@startuml
+!include https://raw.githubusercontent.com/adrianvlupu/C4-PlantUML/latest/C4_Context.puml
+
+Person(pbc, "Accountant", "A user entry the cash flow information of debit/credit.")
+System(ibs, "Cash Flow System", "Allows users to debit/credit entry and view information about Daily consolidated information.")
+
+
+Rel(pbc, ibs, "Uses")
+
+/' Rel(pbc, mbs, "Uses")'/
+@enduml

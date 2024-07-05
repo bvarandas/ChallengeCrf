@@ -1,0 +1,96 @@
+<div  class="container p-5" *ngIf="visibilidadeTabela">
+    
+    <div class="border boder-light rounded p-5"  >
+        <div>
+            <button type="button" class="btn btn-sm btn-secondary"(click)="ExibirFormularioCadastro()" >
+                Novo Lançamento {{titulo}}
+            </button>
+        </div>
+        <hr/>
+        <table class="table tabe-striped table-hover table-sm" *ngIf="cashflows">
+            <tr class="thead-light">
+                <th>Description</th>
+                <th>Lançamento</th>
+                <th>Valor</th>
+                <th>Date</th>
+                <th>Ações</th>
+            </tr>
+            <tr *ngFor="let cashflow of cashflows">
+                <td>{{cashflow.description}}</td>
+                <td>{{cashflow.entry}}</td>
+                <td>{{cashflow.amount | number: '1.2-3'}}</td>
+                <td>{{cashflow.date | date:'dd/MM/yyyy'}}</td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-info" (click)="ExibirFormularioAtualizacao(cashflow)" >Atualizar</button> |
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="ExibirConfirmacaoExclusao(cashflow.cashFlowId, cashflow.description, conteudoModal)">Excluir</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+
+<div class="container p-5" *ngIf="visibilidadeFormulario">
+    <div class="row">
+        <div class="col-6 border boder-light rnded p-5 shadow" *ngIf="formulario">
+            <h6>{{tituloFormulario}}</h6>
+            <hr />
+            <form [formGroup]="formulario" (ngSubmit)="EnviarFormulario()">
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="description" /> 
+                </div>
+
+                <div class="form-group">
+                    <label>Lançamento</label>
+                    <mat-form-field  class="form-control form-control-sm">
+                    <select matNativeControl required formControlName="entry" class="form-control form-control-sm">
+                        <option value="Debito">Debito</option>
+                        <option value="Credito">Credito</option>
+                    </select>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-group">
+                    <label>Valor</label>
+                    <input currencyMask  [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',' }" type="text"  class="form-control form-control-sm" formControlName="amount" /> 
+                </div>
+                <!-- <div class="form-group">
+                    <label>Date</label>
+                    <input matInput [matDatepicker]="picker" class="form-control"  formControlName="date" name="date">
+                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </div> -->
+                
+                <div class="container" >
+                    <div class="d-flex" style="text-align: right ;" >
+                        <div class="class="d-inline-block>
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">Salvar</button>
+                        </div>
+                        <div class="class="d-inline-block>
+                            <button type="button" class="btn btn-sm btn-light" (click)="Voltar()">Voltar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<ng-template #conteudoModal>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Confirmação de Exclusão</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      Prosseguir com a exclusão do {{description}}
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="modalRef.hide()">Não</button>
+        <button type="button" class="btn btn-outline-danger" (click)="RemoverRegistro(cashFlowId)">Sim</button>
+    </div>
+  </ng-template>

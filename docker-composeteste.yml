@@ -1,0 +1,83 @@
+version: '3.9'
+name: challenge-crf
+
+services:
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: 'rabbitmq-server'
+        hostname: rabbitmq
+        ports:
+            - 15672:15672
+            - 5672:5672
+        volumes:
+            - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+            - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+        # environment:
+        #     - RABBITMQ_DEFAULT_USER=admin
+        #     - RABBITMQ_DEFAULT_PASS=admin2017
+        networks: 
+            - challenge
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:15672"]
+            interval: 10s
+            timeout: 10s
+            retries: 2
+
+    mongo:
+        image: mongo
+        restart: always
+        ports:
+           - 27017:27017
+        environment:
+           MONGO_INITDB_ROOT_USERNAME: root
+           MONGO_INITDB_ROOT_PASSWORD: example
+        networks:
+           - challenge
+
+    challengecrf-api:
+        image: bvarandas80/challengecrf-api:v1
+        restart: on-failure
+        hostname: challengecrf-api
+        environment:
+            - ASPNETCORE_URLS=http://+:5200;
+        depends_on: 
+            - mongo
+            - rabbitmq
+        build: .
+        ports:
+            - 5200:5200
+        networks:
+            - challenge
+
+    challengecrf-queue:
+        image: bvarandas80/challengecrf-queue:v1
+        restart: on-failure
+        depends_on: 
+            - mongo
+            - rabbitmq
+        build: .
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Stage
+        ports:
+            - 5303:5303
+        networks:
+            - challenge 
+    
+    angular-service:
+        image: bvarandas80/web-angular:v1
+        #container_name: angularcontainer
+        build: .
+        restart: on-failure
+        ports:
+          - 8081:80
+        networks:
+          - challenge
+            
+networks:
+    challenge:
+        driver: bridge
+
+#Nets bridge/none/hostNone
+# Bridge
+# Overlay
+# Underlay
