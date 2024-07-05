@@ -52,6 +52,13 @@ Modelo da arquitetura C4
 
 ---
 
+Modelo MDL
+
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/cfc14f42-6e4d-4722-8ff2-145ec54c84bd)
+
+
+---
+
 Padrões Criacionais usados:
 * Singleton - para usar somente uma instancia de cada módulo
 
