@@ -43,7 +43,7 @@ Usando  **Filas do RabbiMQ** para coreografia do ambiente - Importante na quanti
 
 **JMeter** - para testes não funcionais é recomendado o JMeter, como teste de conexões no signalr e testes de conexões nas APIS.
 
-**Essa abordagem também restringe que cada serviço tenha sua responsabilidade separadamente, garantindo a coesão da programação (Código) e também mantendo suas lógicas de negócio   desacopladas. Melhorando não só a perfomance, mas também  aperfeiçoando a mantenabilidade. Também, é possível notar no diagrama que é possível viabilizar e escalar hozintoalmente uma parte do sistema e escalar verticalmente outra parte do sistema. Obtendo o máximo de economia no gasto com recursos com infraestrutura**
+**Essa abordagem também restringe que cada serviço tenha sua responsabilidade separadamente, garantindo a coesão da programação (Código) e também mantendo suas lógicas de negócio desacopladas. Melhorando não só a perfomance, mas também  aperfeiçoando a mantenabilidade. Também é possível notar no diagrama que é possível viabilizar e escalar horizonntalmente uma parte do sistema e escalar verticalmente outra parte do sistema. Obtendo o máximo de economia no gasto com recursos com infraestrutura**
 ---
 
 Modelo da arquitetura C4
