@@ -54,8 +54,7 @@ Modelo da arquitetura C4
 
 Modelo MDL
 
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/cfc14f42-6e4d-4722-8ff2-145ec54c84bd)
-
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/65b2f8dd-4406-4ac8-af8d-6d668513b24d)
 
 ---
 
