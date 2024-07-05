@@ -39,7 +39,9 @@ Usando  **Filas do RabbiMQ** para coreografia do ambiente - Importante na quanti
 
 **Kibana** - Importante para visualização dos logs de modo padronizado e com ampla gama de funcionalidades de dashboards.
 
+**XUnit e Moq** - Os testes funcionais foram efetuados  nas Hnndlers e nas Services.
 
+**JMeter** - para testes não funcionais é recomendado o JMeter, como teste de conexões no signalr e testes de conexões nas APIS.
 
 **Essa abordagem também restringe que cada serviço tenha sua responsabilidade separadamente, garantindo a coesão da programação (Código) e também mantendo suas lógicas de negócio   desacopladas. Melhorando não só a perfomance, mas também o aperfeiçoando a mantenabilidade. Também, é possível notar no diagrama que é possível viabilizar e escala somente uma parte do sistema**
 ---
@@ -104,6 +106,12 @@ Na visual studio Code, entrar na pasta
 Abrir um terminal e digitar ng serve
 
 Acessar no navegador http://localhost:4200/
+
+---
+
+Testes
+
+
 
 Obrigado pela Visita, seja bem vindo a opinar em qualquer melhoria.!!!
 
