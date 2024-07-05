@@ -2,9 +2,11 @@
 Projeto proposto para desafio.
 ---
 
-Projeto se propoe a fazer um CRUD com patterns de mercado e mecanismos usados em soluções no mercado de capitais.
+A Proposta inicial é fazer lançamentos de fluxo de caixa, crédito e débito, mais ou menos um
 
-Requisito arquitetural relevantes: 
+CRUD com patterns de mercado e mecanismos usados em soluções de mensageria.
+
+Requisitos arquiteturais relevantes: 
 * O serviço de controle de lançamento não deve ficar indisponível se o sistema de consolidado diário cair.
 * O serviço recebe 500 requisições por segundos, com no máximo 5% de perda de requisições
 
@@ -79,6 +81,7 @@ Telas do app
 
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/6aea9bf4-5ee8-46ee-917b-62b12db53801)
 
+---
 
 Instruções para rodar
 
@@ -91,26 +94,18 @@ Irá subir os seguintes containers
 
 ![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/bb70b6b9-dcac-493e-a3da-30dc011b55ef)
 
-
+---
 
 
 Na visual studio Code, entrar na pasta 
+![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/e8e127e0-afa3-4548-8fd2-332abe9f27bb)
 
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/2925361b-7de8-4b1b-b632-806a4d31d1e8)
-
-![image](https://github.com/bvarandas/ChallengeCrf/assets/13907905/9b7e4af0-b126-4ffa-a91c-231fcb563313)
 
 Abrir um terminal e digitar ng serve
 
 Acessar no navegador http://localhost:4200/
 
-
-Irá subir os containers de:
-rabbitmq-server - RabbitMQ
-mongo - MongoDB
-challengecrf.api - Api de requisições para Controle de lançamentos e consolidado diário
-challengecrf.queue - Worker para Producer e consumer para o serviço 
-angularcontainer - Front End em angular para efetuar o cadastro. http//localhost:4200/cashflow
+Obrigado pela Visita, seja bem vindo a opinar em qualquer melhoria.!!!
 
 
 
