@@ -42,11 +42,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Logging", "Infrastructure\Common.Logging\Common.Logging.csproj", "{4AE0DE08-02F3-40EF-863C-C891F8992B7F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateways", "ApiGateways", "{F069D66F-BB3E-4A66-BB2B-45A579847EB7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ocelot.ApiGateway", "ApiGateways\Ocelot.ApiGateway\Ocelot.ApiGateway.csproj", "{4492A15C-089D-4A50-8C24-C89B1E409D22}"
-EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{AE53F67F-12A7-4901-AD45-0C0406617410}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F7F4BC2B-56B4-4977-AA59-DB60F9864487}"
+	ProjectSection(SolutionItems) = preProject
+		nginx.conf = nginx.conf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -90,10 +91,6 @@ Global
 		{4AE0DE08-02F3-40EF-863C-C891F8992B7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AE0DE08-02F3-40EF-863C-C891F8992B7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AE0DE08-02F3-40EF-863C-C891F8992B7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4492A15C-089D-4A50-8C24-C89B1E409D22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4492A15C-089D-4A50-8C24-C89B1E409D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4492A15C-089D-4A50-8C24-C89B1E409D22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4492A15C-089D-4A50-8C24-C89B1E409D22}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AE53F67F-12A7-4901-AD45-0C0406617410}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AE53F67F-12A7-4901-AD45-0C0406617410}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE53F67F-12A7-4901-AD45-0C0406617410}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -119,7 +116,6 @@ Global
 		{3736640B-0205-4B89-9535-A95833846DE0} = {AA15B477-A3E9-4CAA-BDBA-A07911817A91}
 		{66B63018-7314-428D-A30D-4249FDC3C5FB} = {753B41B0-1C37-47D3-94A5-2318CFAE3604}
 		{4AE0DE08-02F3-40EF-863C-C891F8992B7F} = {68A1BBA4-43B0-4AEF-9DEA-5A4991C6C01B}
-		{4492A15C-089D-4A50-8C24-C89B1E409D22} = {F069D66F-BB3E-4A66-BB2B-45A579847EB7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4DC49C0B-C4B4-4192-86C4-E29D6503E22A}

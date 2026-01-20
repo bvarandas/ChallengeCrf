@@ -12,12 +12,6 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  ocelot.apigateway:
-    image: ${DOCKER_REGISTRY-}ocelotapigateway
-    build:
-      context: .
-      dockerfile: ApiGateways/Ocelot.ApiGateway/Dockerfile
-
   challengecrf.api:
     image: ${DOCKER_REGISTRY-}challengecrfapi
     build:

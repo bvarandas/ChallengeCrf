@@ -1,6 +1,17 @@
 version: '3.4'
 
 services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "9010:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      #- ./html:/usr/share/nginx/html:ro
+    restart: unless-stopped
+    networks:
+      - challenge
+
   challengecrf.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -39,17 +50,6 @@ services:
     #   timeout: 10s
     #   retries: 2
 
-  ocelot.apigateway:
-    container_name: ocelotapigateway
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development      
-    depends_on:
-#      - identityserver
-      - challengecrf.api
-      - challengecrf.queue.worker
-    ports:
-      - "9010:80"
-  
   elasticsearch:
     container_name: elasticsearch
     environment:
