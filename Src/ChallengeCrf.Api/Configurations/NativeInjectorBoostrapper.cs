@@ -1,7 +1,10 @@
 ﻿using ChallengeCrf.Api.Producer;
 using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Application.Services;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Infra.Data;
+using ChallengeCrf.Infra.Data.Repository;
 using ChallengeCrf.Queue.Worker.Configurations;
 using Common.Logging.Correlation;
 using System.Reflection;
@@ -10,7 +13,7 @@ namespace ChallengeCrf.Api.Configurations;
 
 internal class NativeInjectorBoostrapper
 {
-    public static void RegisterServices(IServiceCollection services , IConfiguration config)
+    public static void RegisterServices(IServiceCollection services, IConfiguration config)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -20,6 +23,10 @@ internal class NativeInjectorBoostrapper
         services.AddSingleton<IQueueConsumer, QueueConsumer>();
         services.AddSingleton<IQueueProducer, QueueProducer>();
         services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+        services.AddScoped<IOutboxCache, OutboxCache>();
+
+        //DragonflyDB settings
+        services.Configure<ConnectionDragonflyDB>(config.GetSection(nameof(ConnectionDragonflyDB)));
 
         //SignalR
         services.AddSignalR();
@@ -41,10 +48,8 @@ internal class NativeInjectorBoostrapper
             builderc
             .AllowAnyHeader()
             .AllowAnyMethod()
-            //.AllowAnyOrigin()
-            .SetIsOriginAllowed((host) => true)
+            .WithOrigins("http://locallhost:4200")
             .AllowCredentials();
-
             //.SetIsOriginAllowed((host) => true)
 
         }));
@@ -54,6 +59,6 @@ internal class NativeInjectorBoostrapper
         //services.AddSingleton<IQueueConsumer, QueueConsumer>();
         services.AddHostedService<QueueConsumer>();
         services.AddHostedService<QueueProducer>();
-        
+        services.AddHostedService<OutboxProcessorService>();
     }
 }

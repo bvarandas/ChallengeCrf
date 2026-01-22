@@ -1,7 +1,7 @@
 ﻿using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.ValueObjects;
 
-namespace ChallengeCrf.Application.Interfaces;
+namespace ChallengeCrf.Domain.Interfaces;
 
 public interface IQueueProducer
 {

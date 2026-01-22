@@ -1,9 +1,11 @@
-﻿using RabbitMQ.Client;
-using ChallengeCrf.Domain.Extesions;
+﻿using ChallengeCrf.Domain.Extesions;
+using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
-using Microsoft.Extensions.Options;
-using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Domain.ValueObjects;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 
 namespace ChallengeCrf.Api.Producer;
 
@@ -21,13 +23,13 @@ public class QueueProducer : BackgroundService, IQueueProducer
         _queueSettings = queueSettings.Value;
         try
         {
-            _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port=5672  };
+            _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port = 5672 };
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
 
             _channel.ExchangeDeclare(
                 exchange: "amq.direct",
-                type: _queueSettings.ExchangeType, 
+                type: _queueSettings.ExchangeType,
                 durable: true,
                 autoDelete: false);
 
@@ -44,10 +46,8 @@ public class QueueProducer : BackgroundService, IQueueProducer
                 exclusive: false,
                 autoDelete: false,
                 arguments: null);
-
-            
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
         }
@@ -58,7 +58,7 @@ public class QueueProducer : BackgroundService, IQueueProducer
         try
         {
             _logger.LogInformation($"QueueProducer - Enviando mensagem nova {message.Body.Description}");
-            
+
             var body = message.SerializeToByteArrayProtobuf();
 
             _channel.BasicPublish(

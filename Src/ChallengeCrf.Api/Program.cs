@@ -1,21 +1,12 @@
-using ChallengeCrf.Api.Hubs;
+using AutoMapper;
 using ChallengeCrf.Api.Configurations;
+using ChallengeCrf.Api.Hubs;
+using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Models;
-using ChallengeCrf.Domain.Interfaces;
-using ChallengeCrf.Application.ViewModel;
-using ChallengeCrf.Api.Producer;
-using Serilog;
-using ProtoBuf.Meta;
-using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
 using Common.Logging;
-using ChallengeCrf.Application.Interfaces;
-using Common.Logging.Correlation;
-using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Hosting;
-using ChallengeCrf.Domain.Constants;
-using ChallengeCrf.Domain.ValueObjects;
-using System.Security.Policy;
+using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
@@ -44,18 +35,15 @@ app.UseStatusCodePages(async statusCodeContext
 
 //app.MapHealthChecks("/healthz");
 
-app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer, ILogger<Program> logger ) => 
+app.MapPost("api/cashflow/", async (CashFlow cash,
+    IMediatorHandler _mediator, ILogger<Program> logger) =>
 {
     try
     {
-        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
-        envelopeMessage.Action = UserAction.Insert;
-        envelopeMessage.LastTransaction = DateTime.Now;
-        cash.Date = DateTime.Now;
-        
-        await queueProducer.PublishMessageAsync(envelopeMessage);
+        var addCommand = new InsertCashFlowCommand(cash);
+        await _mediator.SendCommand(addCommand);
 
-        return Results.Accepted(null,cash);
+        return Results.Accepted(null, cash);
     }
     catch (Exception ex)
     {
@@ -63,19 +51,12 @@ app.MapPost("api/cashflow/",  async (CashFlow cash, IQueueProducer queueProducer
         return Results.BadRequest(ex);
     }
 });
-app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer queueProducer, ILogger<Program> logger) => 
+app.MapPut("api/cashflow/", async (CashFlow cash, IMapper _mapper, IMediatorHandler _mediator, ILogger<Program> logger) =>
 {
     try
     {
-        CashFlow cash = new CashFlow(cashModel.CashFlowId, cashModel.CashFlowId, cashModel.Description, cashModel.Amount, cashModel.Entry, DateTime.Now);
-        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
-        envelopeMessage.Action = UserAction.Update;
-        envelopeMessage.LastTransaction = DateTime.Now;
-
-        cash.Id = new MongoDB.Bson.ObjectId(cashModel.CashFlowId);
-        cash.cashFlowIdTemp = cashModel.CashFlowId;
-        
-        await queueProducer.PublishMessageAsync(envelopeMessage);
+        var addCommand = new UpdateCashFlowCommand(cash);
+        await _mediator.SendCommand(addCommand);
 
         return Results.Accepted(null, cash);
     }
@@ -86,14 +67,29 @@ app.MapPut("api/cashflow/", async (CashFlowViewModel cashModel, IQueueProducer q
     }
 });
 
-app.MapGet("api/cashflow/", async (IQueueProducer queueProducer, ILogger<Program> logger) => {
+app.MapDelete("api/cashflow/{id}", async (string id, IMapper _mapper, IMediatorHandler _mediator, ILogger<Program> logger) =>
+{
     try
     {
-        var cash = new CashFlow("",0,"",DateTime.Now);
-        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
-        envelopeMessage.Action = UserAction.GetAll;
+        var addCommand = new RemoveCashFlowCommand(id);
+        await _mediator.SendCommand(addCommand);
 
-        await queueProducer.PublishMessageAsync(envelopeMessage);
+        return Results.Ok(null);
+
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, $"{ex.Message}");
+        return Results.BadRequest(ex);
+    }
+});
+
+app.MapGet("api/cashflow/", async (IMediatorHandler _mediator, ILogger<Program> logger) =>
+{
+    try
+    {
+
+
 
         return Results.Ok(null);
     }
@@ -104,19 +100,10 @@ app.MapGet("api/cashflow/", async (IQueueProducer queueProducer, ILogger<Program
     }
 });
 
-app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, ILogger<Program> logger) =>
+app.MapGet("api/cashflow/{id}", async (IMediatorHandler _mediator, string id, ILogger<Program> logger) =>
 {
     try
     {
-        var cash = new CashFlow("", 0, "", DateTime.Now) 
-        { 
-            CashFlowId = id, cashFlowIdTemp= id , Id = new MongoDB.Bson.ObjectId(id) 
-        };
-
-        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
-        envelopeMessage.Action = UserAction.Get;
-
-        await queueProducer.PublishMessageAsync(envelopeMessage);
 
         return Results.Ok(null);
     }
@@ -127,32 +114,9 @@ app.MapGet("api/cashflow/{id}", async (IQueueProducer queueProducer, string id, 
     }
 });
 
-app.MapDelete("api/cashflow/{id}", async (string id, IQueueProducer queueProducer,  ILogger<Program> logger) => 
-{
-    try
-    {
-        var cash = new CashFlow("", 0, "", DateTime.Now)
-        {
-            CashFlowId = id,
-            cashFlowIdTemp = id,
-            Id = new MongoDB.Bson.ObjectId(id)
-        };
-        
-        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
-        envelopeMessage.Action = UserAction.Delete;
 
-        await queueProducer.PublishMessageAsync(envelopeMessage);
 
-        return Results.Ok(null);
-
-    }catch(Exception ex)
-    {
-        logger.LogError(ex, $"{ex.Message}");
-        return Results.BadRequest(ex);
-    }
-});
-
-app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProducer queueProducer, ILogger<Program> logger) => 
+app.MapGet("api/dailyconsolidated", async ([FromQuery] string date, ILogger<Program> logger) =>
 {
     try
     {
@@ -160,14 +124,6 @@ app.MapGet("api/dailyconsolidated", async ([FromQuery]string date, IQueueProduce
         {
             return Results.BadRequest("Data inválida");
         }
-
-        var dailyConsolidated = new DailyConsolidated("", 0, 0,0, dateFilter, null) ;
-
-        var envelopeMessage = new EnvelopeMessage<DailyConsolidated>(dailyConsolidated);
-        envelopeMessage.Action = UserAction.Get;
-
-        await queueProducer.PublishMessageAsync(envelopeMessage);
-
 
         return Results.Ok(null);
     }

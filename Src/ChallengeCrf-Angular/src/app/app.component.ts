@@ -52,7 +52,7 @@ export class AppComponent {
   private startConnection() : void {
     this._hubConnection
     .start()
-    .then(()=> {
+    .then(( )=> {
       console.log('Hub connection started');
       this.connectToMessageBroker();
     })

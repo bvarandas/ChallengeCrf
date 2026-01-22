@@ -1,13 +1,12 @@
-﻿using ChallengeCrf.Api.Hubs;
-using ChallengeCrf.Application.Interfaces;
-using ChallengeCrf.Application.ViewModel;
-using ChallengeCrf.Domain.Extesions;
+﻿using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.ValueObjects;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -20,20 +19,19 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
     private readonly ConnectionFactory _factory;
     private readonly IConnection _connection;
     private readonly IModel _channel;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceScopeFactory _serviceProvider;
 
-    private readonly Dictionary<string, CashFlowViewModel> _flows;
     public QueueConsumer(
-        IOptions<QueueEventSettings> queueSettings, 
+        IOptions<QueueEventSettings> queueSettings,
         ILogger<QueueConsumer> logger,
-        IServiceProvider provider)
+        IServiceScopeFactory provider)
     {
         _logger = logger;
         _queueSettings = queueSettings.Value;
         _factory = new ConnectionFactory()
         {
             HostName = _queueSettings.HostName,
-            Port=5672,
+            Port = 5672,
         };
 
         _connection = _factory.CreateConnection();
@@ -50,13 +48,12 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
             autoDelete: false);
 
         _serviceProvider = provider;
-        _flows = new Dictionary<string, CashFlowViewModel>();
     }
 
-    protected override  async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Aguardando mensagens Event...");
-        
+
         var consumerCashFlow = new EventingBasicConsumer(_channel);
         consumerCashFlow.Received += Consumer_ReceivedCashFlow;
 
@@ -65,8 +62,8 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
 
 
         _channel.BasicConsume(
-            queue: _queueSettings.QueueNameCashFlow, 
-            autoAck: false, 
+            queue: _queueSettings.QueueNameCashFlow,
+            autoAck: false,
             consumer: consumerCashFlow);
 
         _channel.BasicConsume(
@@ -89,8 +86,7 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var hubContext = scope.ServiceProvider
-                    .GetRequiredService<IHubContext<BrokerHub>>();
+                var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<BrokerHub>>();
 
                 await hubContext.Clients.Groups("CrudMessage").SendAsync("ReceiveMessageDC", message);
             }
@@ -104,29 +100,18 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         }
     }
 
-    public CashFlowViewModel RegisterGetById(string registerId)
-    {
-        return _flows[registerId];
-    }
+
 
     private async void Consumer_ReceivedCashFlow(object? sender, BasicDeliverEventArgs e)
     {
         try
         {
             _logger.LogInformation("Chegou mensagem nova");
-            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlowViewModel>>();
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlow>>();
 
             using (var scope = _serviceProvider.CreateScope())
             {
-                var hubContext = scope.ServiceProvider
-                    .GetRequiredService<IHubContext<BrokerHub>>();
-
-                _flows.Clear();
-
-                messageList.ForEach(mess => {
-                    _flows.TryAdd(mess.CashFlowId, mess);
-                });
-
+                var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<BrokerHub>>();
 
                 await hubContext.Clients.Groups("CrudMessage").SendAsync("ReceiveMessageCF", messageList);
             }
@@ -135,15 +120,17 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message,ex);
-            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<List<CashFlowViewModel>>>();
+            _logger.LogError(ex.Message, ex);
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<List<CashFlow>>>();
             var oType = messageList.GetType();
 
-            if (oType.IsGenericType && 
-                oType.GetGenericTypeDefinition() == typeof(List<CashFlowViewModel>))
+            if (oType.IsGenericType &&
+                oType.GetGenericTypeDefinition() == typeof(List<CashFlow>))
             {
                 _channel.BasicAck(e.DeliveryTag, false);
-            }else{
+            }
+            else
+            {
                 _channel.BasicNack(e.DeliveryTag, false, true);
             }
         }

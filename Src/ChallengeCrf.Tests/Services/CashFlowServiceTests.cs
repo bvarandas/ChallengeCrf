@@ -1,13 +1,9 @@
-﻿using Amazon.Runtime.Internal.Util;
-using AutoFixture;
-using AutoMapper;
+﻿using AutoMapper;
 using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Application.Services;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Interfaces;
-using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
-using MediatR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -25,6 +21,7 @@ public class CashFlowServiceTests
             new Mock<ICashFlowRepository>().Object,
             new Mock<IMediatorHandler>().Object,
             new Mock<IEventStoreRepository>().Object,
+            new Mock<IOutboxCache>().Object,
             new Mock<ILogger<CashFlowService>>().Object);
 
     }
@@ -48,7 +45,7 @@ public class CashFlowServiceTests
             55.66,
             "Debito",
             DateTime.Now);
-        
+
         var result = cashFlowService.AddCashFlowAsync(cashFlow);
         Assert.NotNull(result);
     }
@@ -58,7 +55,7 @@ public class CashFlowServiceTests
     {
         //var cashFlow = new InsertCashFlowCommand("total recall insert", 55.66, "Debito", DateTime.Now);
         InsertCashFlowCommand cashFlow = null;
-        var result =  cashFlowService.AddCashFlowAsync(cashFlow);
+        var result = cashFlowService.AddCashFlowAsync(cashFlow);
         Assert.Null(result);
     }
 
@@ -73,7 +70,7 @@ public class CashFlowServiceTests
     [Fact]
     public void UpdateCashFlowAsync_InsertNull()
     {
-        var cashFlow = new UpdateCashFlowCommand("507f1f77bcf86cd799439011","total recall update", 66.77, "Debito", DateTime.Now);
+        var cashFlow = new UpdateCashFlowCommand("507f1f77bcf86cd799439011", "total recall update", 66.77, "Debito", DateTime.Now);
         var result = cashFlowService.UpdateCashFlowAsync(cashFlow);
         Assert.Null(result);
     }

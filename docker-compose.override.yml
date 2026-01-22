@@ -1,18 +1,32 @@
 version: '3.4'
 
 services:
+  dragonflydb:
+    container_name: dragonflydb
+    command: "--proactor_threads 2 --snapshot_cron '*/5 * * * *'"
+    ulimits: 
+      memlock: -1
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks: [challenge]
+    volumes: 
+      - dragonflydata:/data
+
   nginx:
-    image: nginx:alpine
+    #image: nginx:alpine
+    build: ./nginx
+    container_name: nginx
     ports:
       - "9010:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    #volumes:
+      #- ./nginx.conf:/etc/nginx/nginx.conf:ro
       #- ./html:/usr/share/nginx/html:ro
     restart: unless-stopped
-    networks:
-      - challenge
+    networks: [challenge]
 
   challengecrf.api:
+    container_name: challengecrf.api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - "ElasticConfiguration__Uri=http://elasticsearch:9200"
@@ -21,20 +35,21 @@ services:
       - elasticsearch
     ports:
       - "5200:80"
-    networks:
-      - challenge
+    # expose:
+    #   - "8080"
+    networks: [challenge]
 
   challengecrf.queue.worker:
     environment:
       - DOTNET_ENVIRONMENT=Development
       - "ElasticConfiguration__Uri=http://elasticsearch:9200"
     depends_on:
+      - challengecrf.api
       - rabbitmq
       - elasticsearch
     ports:
       - "5303:5303"
-    networks:
-      - challenge
+    networks: [challenge]
   
   rabbitmq:
     container_name: rabbitmq
@@ -42,8 +57,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    networks:
-      - challenge
+    networks: [challenge]
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:15672"]
     #   interval: 10s
@@ -61,8 +75,7 @@ services:
       - "9200:9200"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-    networks:
-      - challenge
+    networks: [challenge]
   
   kibana:
     container_name: kibana
@@ -72,6 +85,9 @@ services:
       - elasticsearch
     ports:
       - "5601:5601"
+    networks: [challenge]
+
+  
     
   mongo:    
     image: mongo
@@ -81,12 +97,12 @@ services:
     environment:
        MONGO_INITDB_ROOT_USERNAME: root
        MONGO_INITDB_ROOT_PASSWORD: example
-    networks:
-      - challenge
+    networks: [challenge]
 
 volumes:
   mongo_data:
-  elasticsearch-data:  
+  elasticsearch-data:
+  dragonflydata:
   
 networks:
     challenge:

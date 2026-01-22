@@ -44,8 +44,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Logging", "Infrastru
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{AE53F67F-12A7-4901-AD45-0C0406617410}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F7F4BC2B-56B4-4977-AA59-DB60F9864487}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{79E42DBF-FA40-4AC8-ACFB-9E19800FB41B}"
 	ProjectSection(SolutionItems) = preProject
+		nginx\Dockerfile = nginx\Dockerfile
 		nginx.conf = nginx.conf
 	EndProjectSection
 EndProject

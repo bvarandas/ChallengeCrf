@@ -5,23 +5,26 @@ using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Interfaces;
-using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Infra.Data.Context;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using Microsoft.Extensions.Logging;
 namespace ChallengeCrf.Application.Services;
 
-public  class CashFlowService : ICashFlowService
+public class CashFlowService : ICashFlowService
 {
     private readonly IMapper _mapper;
     private readonly IMediatorHandler _mediator;
     private readonly ICashFlowRepository _cashFlowRepository;
+    private readonly IOutboxCache _outboxRepository;
     private readonly IEventStoreRepository _eventStoreRepository;
     private readonly ILogger<CashFlowService> _logger;
+    protected readonly OutboxContext _dbContext;
     public CashFlowService(
-        IMapper mapper, 
-        ICashFlowRepository registerRepository, 
-        IMediatorHandler mediator, 
+        IMapper mapper,
+        ICashFlowRepository registerRepository,
+        IMediatorHandler mediator,
         IEventStoreRepository eventStoreRepository,
+        IOutboxCache outboxRepository,
         ILogger<CashFlowService> logger)
     {
         _mapper = mapper;
@@ -29,13 +32,15 @@ public  class CashFlowService : ICashFlowService
         _eventStoreRepository = eventStoreRepository;
         _mediator = mediator;
         _logger = logger;
+        _outboxRepository = outboxRepository;
     }
+
     public async Task<IAsyncEnumerable<CashFlowViewModel>> GetListAllAsync()
     {
         _logger.LogInformation("Tentando ir no GetAllCashFlowAsync");
         var enumarable = await _cashFlowRepository.GetAllCashFlowAsync();
         var listResult = new List<CashFlowViewModel>();
-        
+
         await foreach (var item in enumarable.Value)
             listResult.Add(_mapper.Map<CashFlowViewModel>(item));
 
@@ -47,7 +52,7 @@ public  class CashFlowService : ICashFlowService
     {
         var cashFlow = await _cashFlowRepository.GetCashFlowByIDAsync(cashFlowId);
         var result = _mapper.Map<CashFlowViewModel>(cashFlow);
-        return  result;
+        return result;
     }
 
     public async Task AddCashFlowAsync(CashFlowCommand register)
