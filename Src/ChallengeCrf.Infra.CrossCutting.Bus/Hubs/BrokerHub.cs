@@ -1,7 +1,5 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-
-namespace ChallengeCrf.Api.Hubs;
+﻿using Microsoft.AspNetCore.SignalR;
+namespace ChallengeCrf.Infra.CrossCutting.Bus;
 
 public class BrokerHub : Hub
 {

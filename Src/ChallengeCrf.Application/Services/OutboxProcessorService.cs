@@ -1,9 +1,6 @@
-﻿using ChallengeCrf.Application.Interfaces;
-using ChallengeCrf.Domain.Constants;
-using ChallengeCrf.Domain.Interfaces;
+﻿using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.ValueObjects;
-using ChallengeCrf.Infra.Data.Context;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json;
@@ -26,7 +23,6 @@ public class OutboxProcessorService : BackgroundService
         {
             using (var scope = _scopeFactory.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<OutboxContext>();
                 var messageBroker = scope.ServiceProvider.GetRequiredService<IQueueProducer>();
 
                 var listCashFlow = await _cache.GetCashFlowOutboxAsync();
@@ -37,24 +33,21 @@ public class OutboxProcessorService : BackgroundService
                 {
                     try
                     {
-                        var cash = JsonSerializer.Deserialize<CashFlow>(message.Content);
 
-                        var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
-                        envelopeMessage.Action = UserAction.Insert;
+                        var envelopeMessage = JsonSerializer.Deserialize<EnvelopeMessage<CashFlow>>(message.Content);
                         envelopeMessage.LastTransaction = DateTime.Now;
-                        cash.Date = DateTime.Now;
 
                         await messageBroker.PublishMessageAsync(envelopeMessage);
 
-                        // Mark as processed
-                        message.ProcessedOnUtc = DateTime.UtcNow;
-                        await dbContext.SaveChangesAsync();
+                        var cash = envelopeMessage.Body;
+
+                        await _cache.RemoveCashflowAsync(cash);
                     }
                     catch (Exception ex)
                     {
                         // Log the error and potentially set the Error field
                         message.Error = ex.Message;
-                        await dbContext.SaveChangesAsync();
+
                     }
                 }
             }

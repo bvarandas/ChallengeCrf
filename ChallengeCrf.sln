@@ -47,7 +47,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nginx", "nginx", "{79E42DBF-FA40-4AC8-ACFB-9E19800FB41B}"
 	ProjectSection(SolutionItems) = preProject
 		nginx\Dockerfile = nginx\Dockerfile
-		nginx.conf = nginx.conf
+		nginx\nginx.conf = nginx\nginx.conf
 	EndProjectSection
 EndProject
 Global

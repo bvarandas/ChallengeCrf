@@ -1,9 +1,9 @@
 using AutoMapper;
 using ChallengeCrf.Api.Configurations;
-using ChallengeCrf.Api.Hubs;
 using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Infra.CrossCutting.Bus;
 using Common.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;

@@ -1,7 +1,6 @@
 ﻿using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
-using ChallengeCrf.Domain.ValueObjects;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace ChallengeCrf.Api.Producer;
+namespace ChallengeCrf.Infra.CrossCutting.Bus;
 
 public class QueueConsumer : BackgroundService, IQueueConsumer
 {
@@ -121,18 +120,19 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         catch (Exception ex)
         {
             _logger.LogError(ex.Message, ex);
-            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<List<CashFlow>>>();
-            var oType = messageList.GetType();
+            _channel.BasicAck(e.DeliveryTag, false);
+            //var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<List<CashFlow>>>();
+            //var oType = messageList.GetType();
 
-            if (oType.IsGenericType &&
-                oType.GetGenericTypeDefinition() == typeof(List<CashFlow>))
-            {
-                _channel.BasicAck(e.DeliveryTag, false);
-            }
-            else
-            {
-                _channel.BasicNack(e.DeliveryTag, false, true);
-            }
+            //if (oType.IsGenericType &&
+            //    oType.GetGenericTypeDefinition() == typeof(List<CashFlow>))
+            //{
+            //    _channel.BasicAck(e.DeliveryTag, false);
+            //}
+            //else
+            //{
+            //    _channel.BasicNack(e.DeliveryTag, false, true);
+            //}
         }
     }
 }

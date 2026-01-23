@@ -1,31 +1,30 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-using ChallengeCrf.Domain.Interfaces;
+﻿using ChallengeCrf.Application.CommandHandlers;
+using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Application.Services;
-using MediatR;
-using ChallengeCrf.Domain.Notifications;
+using ChallengeCrf.Appplication.Interfaces;
+using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.EventHandlers;
 using ChallengeCrf.Domain.Events;
-using ChallengeCrf.Domain.Bus;
+using ChallengeCrf.Domain.Interfaces;
+using ChallengeCrf.Domain.Notifications;
 using ChallengeCrf.Infra.CrossCutting.Bus;
-using ChallengeCrf.Application.Interfaces;
-using ChallengeCrf.Application.Commands;
-using ChallengeCrf.Application.CommandHandlers;
-using ChallengeCrf.Infra.Data.Repository;
-using ChallengeCrf.Infra.Data.UoW;
+using ChallengeCrf.Infra.Data;
 using ChallengeCrf.Infra.Data.Context;
-using ChallengeCrf.Infra.Data.Repository.EventSourcing;
-
 using ChallengeCrf.Infra.Data.EventSourcing;
-using ChallengeCrf.Appplication.Interfaces;
+using ChallengeCrf.Infra.Data.Repository;
+using ChallengeCrf.Infra.Data.Repository.EventSourcing;
+using ChallengeCrf.Infra.Data.UoW;
 using FluentResults;
-using ChallengeCrf.Infra.CrossCutting.Middleware;
+using MediatR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ChallengeCrf.Infra.CrossCutting.Ioc;
 
 public class NativeInjectorBootStrapper
 {
-    public static void RegisterServices(IServiceCollection services)
+    public static void RegisterServices(IServiceCollection services, IConfiguration config)
     {
         // Domain Bus (Mediator)
         services.AddSingleton<IMediatorHandler, InMemoryBus>();
@@ -33,6 +32,9 @@ public class NativeInjectorBootStrapper
         // Middleware
         //services.AddSingleton<ConfigurationGlobalException>(options => options.);
         //services.AddSingleton<ConfigurationGlobalException>(opt => opt.);
+
+        //DragonflyDB settings
+        services.Configure<ConnectionDragonflyDB>(config.GetSection(nameof(ConnectionDragonflyDB)));
 
         // Application
         services.AddSingleton<ICashFlowService, CashFlowService>();
@@ -55,7 +57,7 @@ public class NativeInjectorBootStrapper
         services.AddSingleton<IDailyConsolidatedRepository, DailyConsolidatedRepository>();
         services.AddSingleton<IUnitOfWork, UnitOfWork>();
         services.AddSingleton<CashFlowContext>();
-        
+
         // Infra - Data EventSourcing
         services.AddSingleton<IEventStoreRepository, EventStoreSQLRepository>();
         services.AddSingleton<IEventStore, SqlEventStore>();
