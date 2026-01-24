@@ -1,7 +1,5 @@
 ﻿using ChallengeCrf.Application.Interfaces;
-using ChallengeCrf.Application.Services;
 using ChallengeCrf.Appplication.Interfaces;
-using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Models;
 
 namespace ChallengeCrf.Queue.Worker.Workers;
@@ -12,7 +10,8 @@ public class WorkerMessage : BackgroundService
     private readonly IDailyConsolidatedService _dailyConsolidatedService;
     private Thread ThreadMessageSender = null!;
     public WorkerMessage(ICashFlowService registerService,
-        IDailyConsolidatedService dailyConsolidatedService)
+        IDailyConsolidatedService dailyConsolidatedService,
+        IWorkerProducer producer)
     {
         _dailyConsolidatedService = dailyConsolidatedService;
         _flowService = registerService;
@@ -47,18 +46,20 @@ public class WorkerMessage : BackgroundService
         var dailyConsolidated = await _dailyConsolidatedService.GetDailyConsolidatedByDateAsync(DateTime.Now);
         var list = new List<DailyConsolidated>();
 
-        if (dailyConsolidated.IsSuccess)
+        if (dailyConsolidated.IsSuccess && dailyConsolidated.Value is not null)
             await WorkerProducer._Singleton.PublishMessages(dailyConsolidated.Value);
     }
 
     private async Task CashFlowSender()
     {
-        var registerlist = await _flowService.GetListAllAsync();
+        var cashList = await _flowService.GetListAllAsync();
 
-        if (registerlist is not null)
+        var cashListResult = cashList.ToListAsync().Result;
+
+        if (cashList is not null && cashListResult.Count > 0)
         {
-            await WorkerProducer._Singleton.PublishMessages(registerlist.ToListAsync().Result);
+            await WorkerProducer._Singleton?.PublishMessages(cashListResult);
         }
-        
+
     }
 }

@@ -2,9 +2,8 @@
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Notifications;
 using MediatR;
-using System.Threading;
 
-namespace ChallengeCrf.Application.CommandHandlers;
+namespace ChallengeCrf.Application.Handlers;
 
 public class CommandHandler
 {
@@ -27,7 +26,7 @@ public class CommandHandler
         }
     }
 
-    public async Task<bool> Commit(CancellationToken cancelationToken )
+    public async Task<bool> Commit(CancellationToken cancelationToken)
     {
         if (_notifications.HasNotifications()) return false;
         if (await _uow.Commit(cancelationToken)) return true;

@@ -3,6 +3,7 @@ using ChallengeCrf.Domain.Models;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -38,7 +39,7 @@ namespace ChallengeCrf.Infra.Data.Repository
 
             var result = Enumerable.Empty<OutboxMessage>();
 
-            var hashEntry = await _db.HashGetAllAsync(keycash);
+            var hashEntry = await _db.HashGetAllAsync(keyoutbox);
 
             foreach (var item in hashEntry)
             {
@@ -53,25 +54,27 @@ namespace ChallengeCrf.Infra.Data.Repository
 
         public async Task<Result> UpsertCashflowAsync(CashFlow cash)
         {
-            ITransaction transaction = _db.CreateTransaction();
-
             try
             {
-                RedisValue value = new RedisValue(JsonSerializer.Serialize(cash));
+                IDatabase db = _dragonfly.GetDatabase();
+                ITransaction transaction = db.CreateTransaction();
 
-                await transaction.HashSetAsync(keycash, new HashEntry[] { new HashEntry(cash.CashFlowId, value) });
+                cash.Id = ObjectId.Parse(cash.CashFlowId);
 
                 var outboxMessage = new OutboxMessage
                 {
                     Id = Guid.NewGuid(),
                     Type = cash.GetType().FullName,
                     Content = JsonSerializer.Serialize(cash),
-                    OccurredOnUtc = DateTime.UtcNow
+                    OccurredOnUtc = DateTime.UtcNow,
                 };
 
+                RedisValue value = new RedisValue(JsonSerializer.Serialize<CashFlow>(cash));
                 RedisValue valueOutbox = new RedisValue(JsonSerializer.Serialize(outboxMessage));
 
-                await transaction.HashSetAsync(keyoutbox, new HashEntry[] { new HashEntry(cash.CashFlowId, valueOutbox) });
+                _ = transaction.HashSetAsync(keycash, new HashEntry[] { new HashEntry(new RedisValue(cash.CashFlowId), value) });
+
+                _ = transaction.HashSetAsync(keyoutbox, new HashEntry[] { new HashEntry(new RedisValue(cash.CashFlowId), valueOutbox) });
 
                 bool committed = await transaction.ExecuteAsync();
 
@@ -95,9 +98,9 @@ namespace ChallengeCrf.Infra.Data.Repository
             {
                 RedisValue value = new RedisValue(cash.CashFlowId);
 
-                await transaction.HashDeleteAsync(keycash, value);
+                _ = transaction.HashDeleteAsync(keycash, value);
 
-                await transaction.HashDeleteAsync("outbox", value);
+                _ = transaction.HashDeleteAsync(keyoutbox, value);
 
                 bool committed = await transaction.ExecuteAsync();
 

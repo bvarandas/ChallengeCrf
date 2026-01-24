@@ -1,12 +1,12 @@
-﻿using RabbitMQ.Client;
+﻿using ChallengeCrf.Application.Interfaces;
+using ChallengeCrf.Application.ViewModel;
+using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Models;
 using Microsoft.Extensions.Options;
-using ChallengeCrf.Domain.Extesions;
-using ChallengeCrf.Application.Interfaces;
-using ChallengeCrf.Application.ViewModel;
+using RabbitMQ.Client;
 
 namespace ChallengeCrf.Queue.Worker.Workers;
-public class WorkerProducer :  IWorkerProducer
+public class WorkerProducer : IWorkerProducer
 {
     private readonly ILogger<WorkerProducer> _logger;
     private readonly QueueEventSettings _queueSettings;
@@ -15,7 +15,7 @@ public class WorkerProducer :  IWorkerProducer
     private readonly IConnection _connection;
     private static WorkerProducer _instance = null!;
 
-    public static WorkerProducer  _Singleton
+    public static WorkerProducer _Singleton
     {
         get
         {
@@ -23,23 +23,23 @@ public class WorkerProducer :  IWorkerProducer
         }
 
     }
-    
+
     public WorkerProducer(IOptions<QueueEventSettings> queueSettings, ILogger<WorkerProducer> logger)
     {
         _logger = logger;
         _queueSettings = queueSettings.Value;
-        
+        _instance = this;
         try
         {
             _logger.LogInformation($"O hostname é {_queueSettings.HostName}");
-            _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port=_queueSettings.Port };
-            
+            _factory = new ConnectionFactory { HostName = _queueSettings.HostName, Port = _queueSettings.Port };
+
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
 
             _channel.ExchangeDeclare(
                 exchange: "amq.direct",
-                type: _queueSettings.ExchangeType, 
+                type: _queueSettings.ExchangeType,
                 durable: true,
                 autoDelete: false);
 
@@ -61,7 +61,7 @@ public class WorkerProducer :  IWorkerProducer
         {
             _logger.LogError(ex.Message, ex);
         }
-        _instance = this;
+
     }
 
     public Task PublishMessages(List<CashFlowViewModel> messageList)
@@ -102,7 +102,7 @@ public class WorkerProducer :  IWorkerProducer
         return Task.CompletedTask;
     }
 
-    public  async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {

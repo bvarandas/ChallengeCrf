@@ -1,15 +1,12 @@
-﻿using ProtoBuf;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Diagnostics.CodeAnalysis;
+using ProtoBuf;
 
 namespace ChallengeCrf.Domain.Models;
 
 
 [ProtoContract]
-public sealed class CashFlow 
+public sealed class CashFlow
 {
     //[BsonId]
     //[ProtoMember(8)]
@@ -17,25 +14,24 @@ public sealed class CashFlow
     public ObjectId Id { get; set; }
 
     [ProtoMember(8)]
-    public string cashFlowIdTemp = string.Empty;
+    public string CashFlowIdTemp { get; set; }
 
     [ProtoMember(1)]
-    public string CashFlowId 
-    { 
-        get 
+    public string CashFlowId
+    {
+        get
         {
-            //cashFlowIdTemp = Id.ToString();
-            return cashFlowIdTemp; 
-        } 
+            return CashFlowIdTemp;
+        }
         set
         {
-            cashFlowIdTemp = Id.ToString(); 
+            CashFlowIdTemp = value;
         }
     }
 
     [ProtoMember(2)]
     public string Description { get; set; } = string.Empty;
-    
+
     [ProtoMember(3)]
     public double Amount { get; set; }
 

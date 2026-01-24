@@ -1,5 +1,5 @@
-﻿using ChallengeCrf.Application.CommandHandlers;
-using ChallengeCrf.Application.Commands;
+﻿using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.Handlers;
 using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Application.Services;
 using ChallengeCrf.Appplication.Interfaces;
@@ -43,9 +43,9 @@ public class NativeInjectorBootStrapper
         // Domain - Events
         services.AddSingleton<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
 
-        services.AddSingleton<INotificationHandler<CashFlowInsertedEvent>, RegisterEventHandler>();
-        services.AddSingleton<INotificationHandler<CashFlowUpdatedEvent>, RegisterEventHandler>();
-        services.AddSingleton<INotificationHandler<CashFlowRemovedEvent>, RegisterEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowInsertedEvent>, CashFlowEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowUpdatedEvent>, CashFlowEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowRemovedEvent>, CashFlowEventHandler>();
 
         // Domain - Commands
         services.AddSingleton<IRequestHandler<InsertCashFlowCommand, Result<bool>>, CashFlowCommandHandler>();

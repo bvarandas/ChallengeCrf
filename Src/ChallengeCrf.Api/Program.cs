@@ -1,11 +1,13 @@
 using AutoMapper;
 using ChallengeCrf.Api.Configurations;
 using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Infra.CrossCutting.Bus;
 using Common.Logging;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,12 +37,13 @@ app.UseStatusCodePages(async statusCodeContext
 
 //app.MapHealthChecks("/healthz");
 
-app.MapPost("api/cashflow/", async (CashFlow cash,
-    IMediatorHandler _mediator, ILogger<Program> logger) =>
+app.MapPost("api/cashflow/", async (CashFlow cash, IMediatorHandler _mediator, ILogger<Program> logger) =>
 {
     try
     {
-        var addCommand = new InsertCashFlowCommand(cash);
+        cash.CashFlowIdTemp = cash.CashFlowId = ObjectId.GenerateNewId().ToString();
+
+        var addCommand = new InsertCashFlowCache(cash);
         await _mediator.SendCommand(addCommand);
 
         return Results.Accepted(null, cash);
@@ -51,11 +54,12 @@ app.MapPost("api/cashflow/", async (CashFlow cash,
         return Results.BadRequest(ex);
     }
 });
+
 app.MapPut("api/cashflow/", async (CashFlow cash, IMapper _mapper, IMediatorHandler _mediator, ILogger<Program> logger) =>
 {
     try
     {
-        var addCommand = new UpdateCashFlowCommand(cash);
+        var addCommand = new UpdateCashFlowCache(cash);
         await _mediator.SendCommand(addCommand);
 
         return Results.Accepted(null, cash);
@@ -71,7 +75,7 @@ app.MapDelete("api/cashflow/{id}", async (string id, IMapper _mapper, IMediatorH
 {
     try
     {
-        var addCommand = new RemoveCashFlowCommand(id);
+        var addCommand = new RemoveCashFlowCache(id);
         await _mediator.SendCommand(addCommand);
 
         return Results.Ok(null);
@@ -84,14 +88,13 @@ app.MapDelete("api/cashflow/{id}", async (string id, IMapper _mapper, IMediatorH
     }
 });
 
-app.MapGet("api/cashflow/", async (IMediatorHandler _mediator, ILogger<Program> logger) =>
+app.MapGet("api/cashflow/", async ([FromServices] ICashFlowService service, IMediatorHandler _mediator, ILogger<Program> logger) =>
 {
     try
     {
+        var cashList = await service.GetListAllAsync();
 
-
-
-        return Results.Ok(null);
+        return Results.Ok(cashList);
     }
     catch (Exception ex)
     {
@@ -100,12 +103,13 @@ app.MapGet("api/cashflow/", async (IMediatorHandler _mediator, ILogger<Program> 
     }
 });
 
-app.MapGet("api/cashflow/{id}", async (IMediatorHandler _mediator, string id, ILogger<Program> logger) =>
+app.MapGet("api/cashflow/{id}", async ([FromServices] ICashFlowService service, IMediatorHandler _mediator, string id, ILogger<Program> logger) =>
 {
     try
     {
+        var cash = await service.GetCashFlowyIDAsync(id);
 
-        return Results.Ok(null);
+        return Results.Ok(cash);
     }
     catch (Exception ex)
     {

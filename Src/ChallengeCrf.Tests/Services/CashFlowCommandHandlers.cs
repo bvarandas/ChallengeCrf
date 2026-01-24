@@ -1,5 +1,5 @@
-﻿using ChallengeCrf.Application.CommandHandlers;
-using ChallengeCrf.Application.Commands;
+﻿using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.Handlers;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Constants;
 using ChallengeCrf.Domain.Interfaces;
@@ -46,7 +46,7 @@ public class CashFlowCommandHandlers
 
         //_cashFlowRepositoryMock.Setup(x=>x.)
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -63,7 +63,7 @@ public class CashFlowCommandHandlers
 
         //_cashFlowRepositoryMock.Setup(x=>x.)
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -80,7 +80,7 @@ public class CashFlowCommandHandlers
 
         //_cashFlowRepositoryMock.Setup(x=>x.)
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -104,8 +104,6 @@ public class CashFlowCommandHandlers
             _unitOfWorkMock.Object,
             _mediatorHandlerMock.Object,
             _notifications,
-            _outboxRepository.Object,
-            _queueProducer.Object,
             _loggerMock.Object);
 
         // Action
@@ -125,7 +123,7 @@ public class CashFlowCommandHandlers
 
         //_cashFlowRepositoryMock.Setup(x=>x.)
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -142,7 +140,7 @@ public class CashFlowCommandHandlers
 
         //_cashFlowRepositoryMock.Setup(x=>x.)
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -162,7 +160,7 @@ public class CashFlowCommandHandlers
         _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
             .ReturnsAsync(Result.Ok);
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -180,7 +178,7 @@ public class CashFlowCommandHandlers
         _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
             .ReturnsAsync(Result.Ok);
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -198,7 +196,7 @@ public class CashFlowCommandHandlers
         _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
             .ReturnsAsync(Result.Ok);
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -221,8 +219,6 @@ public class CashFlowCommandHandlers
             _unitOfWorkMock.Object,
             _mediatorHandlerMock.Object,
             _notifications,
-            _outboxRepository.Object,
-            _queueProducer.Object,
             _loggerMock.Object);
 
         // Action
@@ -243,7 +239,7 @@ public class CashFlowCommandHandlers
         _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
             .ReturnsAsync(Result.Ok);
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 
@@ -261,7 +257,7 @@ public class CashFlowCommandHandlers
         _cashFlowRepositoryMock.Setup(x => x.AddCashFlowAsync(It.IsAny<CashFlow>()))
             .ReturnsAsync(Result.Ok);
 
-        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _outboxRepository.Object, _queueProducer.Object, _loggerMock.Object);
+        var handler = new CashFlowCommandHandler(_cashFlowRepositoryMock.Object, _unitOfWorkMock.Object, _mediatorHandlerMock.Object, _notifications, _loggerMock.Object);
         // Action
         Result<bool> result = await handler.Handle(command, default);
 

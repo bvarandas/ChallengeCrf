@@ -1,6 +1,7 @@
 ﻿using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Domain.ValueObjects;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -121,18 +122,18 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         {
             _logger.LogError(ex.Message, ex);
             _channel.BasicAck(e.DeliveryTag, false);
-            //var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<List<CashFlow>>>();
-            //var oType = messageList.GetType();
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<EnvelopeMessage<List<CashFlow>>>();
+            var oType = messageList.GetType();
 
-            //if (oType.IsGenericType &&
-            //    oType.GetGenericTypeDefinition() == typeof(List<CashFlow>))
-            //{
-            //    _channel.BasicAck(e.DeliveryTag, false);
-            //}
-            //else
-            //{
-            //    _channel.BasicNack(e.DeliveryTag, false, true);
-            //}
+            if (oType.IsGenericType &&
+                oType.GetGenericTypeDefinition() == typeof(List<CashFlow>))
+            {
+                _channel.BasicAck(e.DeliveryTag, false);
+            }
+            else
+            {
+                _channel.BasicNack(e.DeliveryTag, false, true);
+            }
         }
     }
 }

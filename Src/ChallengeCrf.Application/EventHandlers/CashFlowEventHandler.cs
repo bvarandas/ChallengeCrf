@@ -1,14 +1,9 @@
 ﻿using ChallengeCrf.Domain.Events;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChallengeCrf.Domain.EventHandlers;
 
-public class RegisterEventHandler :
+public class CashFlowEventHandler :
     INotificationHandler<CashFlowInsertedEvent>,
     INotificationHandler<CashFlowRemovedEvent>,
     INotificationHandler<CashFlowUpdatedEvent>

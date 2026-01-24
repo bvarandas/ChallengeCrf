@@ -1,41 +1,36 @@
 ﻿using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Constants;
+using ChallengeCrf.Domain.Events;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.Notifications;
-using ChallengeCrf.Domain.ValueObjects;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("ChallengeCrf.Tests")]
-namespace ChallengeCrf.Application.CommandHandlers;
+namespace ChallengeCrf.Application.Handlers;
 public sealed class CashFlowCommandHandler : CommandHandler,
     IRequestHandler<InsertCashFlowCommand, Result<bool>>,
     IRequestHandler<UpdateCashFlowCommand, Result<bool>>,
     IRequestHandler<RemoveCashFlowCommand, Result<bool>>
 {
-    private readonly ICashFlowRepository _registerRepository;
-    private readonly IOutboxCache _outboxRepository;
-    private readonly IMediatorHandler _mediator;
-    private readonly IQueueProducer _queueProducer;
+    private readonly ICashFlowRepository _repository;
     private readonly ILogger<CashFlowCommandHandler> _logger;
+    private readonly IMediatorHandler _mediator;
     public CashFlowCommandHandler(
-        ICashFlowRepository registerRepository,
+        ICashFlowRepository repository,
         IUnitOfWork uow,
         IMediatorHandler mediator,
         INotificationHandler<DomainNotification> notifications,
-        IOutboxCache outboxRepository,
-        IQueueProducer queueProducer,
-        ILogger<CashFlowCommandHandler> logger) : base(uow, mediator, notifications)
+            ILogger<CashFlowCommandHandler> logger) : base(uow, mediator, notifications)
     {
-        _registerRepository = registerRepository;
-        _mediator = mediator;
-        _outboxRepository = outboxRepository;
-        _queueProducer = queueProducer;
+        _repository = repository;
         _logger = logger;
+        _mediator = mediator;
     }
 
     public async Task<Result<bool>> Handle(InsertCashFlowCommand command, CancellationToken cancellationToken)
@@ -48,20 +43,14 @@ public sealed class CashFlowCommandHandler : CommandHandler,
 
         var cashFlow = new CashFlow(command.Description, command.Amount, command.Entry, command.Date);
 
-        try
+        cashFlow.Id = ObjectId.GenerateNewId();
+        cashFlow.CashFlowId = cashFlow.CashFlowIdTemp = cashFlow.Id.ToString();
+
+        var result = await _repository.AddCashFlowAsync(cashFlow);
+
+        if (await Commit(cancellationToken))
         {
-            await _outboxRepository.UpsertCashflowAsync(cashFlow); /// insere no outbox.
-
-            var envelopeMessage = new EnvelopeMessage<CashFlow>(cashFlow);
-            envelopeMessage.Action = UserAction.Insert;
-
-            await _queueProducer.PublishMessageAsync(envelopeMessage);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, ex.Message);
-
-            return await Task.FromResult<Result<bool>>(false);
+            await _mediator.RaiseEvent(new CashFlowInsertedEvent(cashFlow.CashFlowId, cashFlow.Description, cashFlow.Amount, cashFlow.Entry, cashFlow.Date, UserAction.Insert));
         }
 
         return await Task.FromResult(true);
@@ -76,14 +65,12 @@ public sealed class CashFlowCommandHandler : CommandHandler,
         }
         var cashFlow = new CashFlow(command.CashFlowId, command.CashFlowId, command.Description, command.Amount, command.Entry, command.Date);
 
-        await _outboxRepository.UpsertCashflowAsync(cashFlow);
+        var result = await _repository.UpdateCashFlowAsync(cashFlow);
 
-        //await _registerRepository.UpdateCashFlowAsync(cashFlow);
-
-        //if (await Commit(cancellationToken))
-        //{
-        //    await _mediator.RaiseEvent(new CashFlowUpdatedEvent(cashFlow.CashFlowId, cashFlow.Description, cashFlow.Amount, cashFlow.Entry, cashFlow.Date));
-        //}
+        if (await Commit(cancellationToken))
+        {
+            await _mediator.RaiseEvent(new CashFlowUpdatedEvent(cashFlow.CashFlowId, cashFlow.Description, cashFlow.Amount, cashFlow.Entry, cashFlow.Date, UserAction.Update));
+        }
 
         return await Task.FromResult(true);
     }
@@ -96,21 +83,17 @@ public sealed class CashFlowCommandHandler : CommandHandler,
             return await Task.FromResult(false);
         }
 
-        var cashFlow = new CashFlow(command.CashFlowId, command.CashFlowId, command.Description, command.Amount, command.Entry, command.Date);
+        var result = await _repository.DeleteCashFlowAsync(command.CashFlowId);
 
-        await _outboxRepository.RemoveCashflowAsync(cashFlow);
-
-        //_registerRepository.DeleteCashFlowAsync(command.CashFlowId);
-
-        //if (await Commit(cancellationToken))
-        //{
-        //    await _mediator.RaiseEvent(new CashFlowRemovedEvent(command.CashFlowId));
-        //}
+        if (await Commit(cancellationToken))
+        {
+            await _mediator.RaiseEvent(new CashFlowRemovedEvent(command.CashFlowId));
+        }
 
         return await Task.FromResult(true);
     }
     public void Dispose()
     {
-        _registerRepository.Dispose();
+        _repository.Dispose();
     }
 }

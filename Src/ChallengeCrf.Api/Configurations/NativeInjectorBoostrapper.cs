@@ -1,17 +1,24 @@
-﻿using ChallengeCrf.Application.Interfaces;
+﻿using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.Handlers;
+using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Application.Services;
 using ChallengeCrf.Domain.Bus;
+using ChallengeCrf.Domain.EventHandlers;
 using ChallengeCrf.Domain.Events;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
+using ChallengeCrf.Domain.Notifications;
 using ChallengeCrf.Infra.CrossCutting.Bus;
 using ChallengeCrf.Infra.Data;
 using ChallengeCrf.Infra.Data.Context;
 using ChallengeCrf.Infra.Data.EventSourcing;
 using ChallengeCrf.Infra.Data.Repository;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
+using ChallengeCrf.Infra.Data.UoW;
 using ChallengeCrf.Queue.Worker.Configurations;
 using Common.Logging.Correlation;
+using FluentResults;
+using MediatR;
 using MongoFramework;
 using System.Reflection;
 
@@ -36,6 +43,18 @@ internal class NativeInjectorBoostrapper
 
         //Application
         services.AddSingleton<ICashFlowService, CashFlowService>();
+
+        // Domain - Commands
+        services.AddSingleton<IRequestHandler<InsertCashFlowCache, Result<bool>>, CashFlowCacheHandler>();
+        services.AddSingleton<IRequestHandler<UpdateCashFlowCache, Result<bool>>, CashFlowCacheHandler>();
+        services.AddSingleton<IRequestHandler<RemoveCashFlowCache, Result<bool>>, CashFlowCacheHandler>();
+
+        // Domain - Events
+        services.AddSingleton<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
+
+        services.AddSingleton<INotificationHandler<CashFlowInsertedEvent>, CashFlowEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowUpdatedEvent>, CashFlowEventHandler>();
+        services.AddSingleton<INotificationHandler<CashFlowRemovedEvent>, CashFlowEventHandler>();
 
         //Infra
         services.AddSingleton<IOutboxCache, OutboxCache>();
@@ -89,5 +108,6 @@ internal class NativeInjectorBoostrapper
         services.AddSingleton<IEventStoreRepository, EventStoreSQLRepository>();
         services.AddSingleton<IEventStore, SqlEventStore>();
         services.AddSingleton<EventStoreSqlContext>();
+        services.AddSingleton<IUnitOfWork, UnitOfWork>();
     }
 }

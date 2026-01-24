@@ -31,3 +31,31 @@ public class UpdateCashFlowCommand : CashFlowCommand
         return ValidationResult.IsValid;
     }
 }
+
+
+public class UpdateCashFlowCache : CashFlowCommand
+{
+    public UpdateCashFlowCache(string cashflowId, string description, double amount, string entry, DateTime date)
+    {
+        CashFlowId = cashflowId;
+        Description = description;
+        Amount = amount;
+        Entry = entry;
+        Date = date;
+    }
+
+    public UpdateCashFlowCache(CashFlow cash)
+    {
+        CashFlowId = cash.CashFlowId;
+        Description = cash.Description;
+        Amount = cash.Amount;
+        Entry = cash.Entry;
+        Date = cash.Date;
+        Action = UserAction.Insert;
+    }
+
+    public override bool IsValid()
+    {
+        return ValidationResult.IsValid;
+    }
+}

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using ChallengeCrf.Application.Commands;
 using ChallengeCrf.Application.Services;
-using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Infra.Data.Repository.EventSourcing;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,6 @@ public class CashFlowServiceTests
         cashFlowService = new CashFlowService(
             new Mock<IMapper>().Object,
             new Mock<ICashFlowRepository>().Object,
-            new Mock<IMediatorHandler>().Object,
             new Mock<IEventStoreRepository>().Object,
             new Mock<IOutboxCache>().Object,
             new Mock<ILogger<CashFlowService>>().Object);

@@ -1,5 +1,6 @@
 ﻿using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Events;
+using FluentResults;
 using MediatR;
 namespace ChallengeCrf.Infra.CrossCutting.Bus;
 public class InMemoryBus : IMediatorHandler
@@ -23,7 +24,7 @@ public class InMemoryBus : IMediatorHandler
         return _mediator.Publish(@event);
     }
 
-    public Task SendCommand<T>(T command) where T : Command
+    public Task<Result<bool>> SendCommand<T>(T command) where T : Command
     {
         return _mediator.Send(command);
     }
