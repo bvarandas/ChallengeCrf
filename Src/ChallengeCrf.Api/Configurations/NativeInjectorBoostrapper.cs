@@ -2,6 +2,7 @@
 using ChallengeCrf.Application.Handlers;
 using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Application.Services;
+using ChallengeCrf.Appplication.Interfaces;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.EventHandlers;
 using ChallengeCrf.Domain.Events;
@@ -19,6 +20,7 @@ using ChallengeCrf.Queue.Worker.Configurations;
 using Common.Logging.Correlation;
 using FluentResults;
 using MediatR;
+using Microsoft.AspNetCore.ResponseCompression;
 using MongoFramework;
 using System.Reflection;
 
@@ -43,6 +45,7 @@ internal class NativeInjectorBoostrapper
 
         //Application
         services.AddSingleton<ICashFlowService, CashFlowService>();
+        services.AddSingleton<IDailyConsolidatedService, DailyConsolidatedService>();
 
         // Domain - Commands
         services.AddSingleton<IRequestHandler<InsertCashFlowCache, Result<bool>>, CashFlowCacheHandler>();
@@ -59,14 +62,20 @@ internal class NativeInjectorBoostrapper
         //Infra
         services.AddSingleton<IOutboxCache, OutboxCache>();
         services.AddSingleton<ICashFlowRepository, CashFlowRepository>();
+        services.AddSingleton<IDailyConsolidatedRepository, DailyConsolidatedRepository>();
+
         services.AddSingleton<CashFlowContext>();
+        services.AddSingleton<UserContext>();
 
         //DragonflyDB settings
         services.Configure<ConnectionDragonflyDB>(config.GetSection(nameof(ConnectionDragonflyDB)));
 
         //SignalR
         services.AddSignalR();
-
+        services.AddResponseCompression(opts =>
+        {
+            opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Append("application/octet-stream");
+        });
         // automapper
         services.AddAutoMapperSetup();
 

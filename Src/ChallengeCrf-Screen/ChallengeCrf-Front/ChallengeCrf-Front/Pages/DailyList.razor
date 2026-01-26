@@ -1,0 +1,62 @@
+﻿@page "/dailylist"
+@inject DailyConsolidatedClient Client;
+@inject NavigationManager NavManager
+@* @using Microsoft.AspNetCore.SignalR.Client *@
+@attribute [StreamRendering]
+
+<PageTitle>Daily Consolidated</PageTitle>
+@if (dailys is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped table-bordered table-hover mt-3">
+        <thead class="table-dark">
+        <th>Amount Debit</th>
+        <th>Amount Credit</th>
+        <th>Amount Total</th>
+        <th>Date</th>
+        <th></th>
+        </thead>
+        <tbody>
+            @foreach (var daily in dailys)
+            {
+                <tr>
+                    <td>@daily.amountDebit.ToString("C2")</td>
+                    <td>@daily.amountCredit.ToString("C2")</td>
+                    <td>@daily.amountTotal.ToString("C2")</td>
+                    <td>@daily.date</td>
+                    <td>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    //private HubConnection? hubConnection;
+    
+    private DailyConsolidatedSummary[]? dailys;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dailys = await Client.GetDailyConsolidatedAsync();
+
+        // hubConnection = new HubConnectionBuilder()
+        //     .WithUrl(NavManager.ToAbsoluteUri("http://localhost:9010/hubs/brokerhub"))
+        //     .Build();
+
+        // hubConnection.On<DailyConsolidatedSummary>("ReceiveMessageDC", (DailyConsolidatedSummary data) =>
+        // {
+        //     var list = new List<DailyConsolidatedSummary>();
+        //     list.Add(data);
+
+        //     dailys = list.ToArray();
+            
+        //     InvokeAsync(StateHasChanged);
+        // });
+
+        // await hubConnection.StartAsync();
+    }
+}

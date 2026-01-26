@@ -1,0 +1,106 @@
+﻿@page "/editcash"
+@page "/editcash/{id}"
+@* @rendermode InteractiveServer *@
+@inject NavigationManager NavigationManager
+@inject CashFlowClient CashFlowClient
+
+<PageTitle>@title</PageTitle>
+<h3>@title</h3>
+
+@if (cash is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="@cash" FormName="editCash" OnValidSubmit="HandleSubmitAsync" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <InputText class="form-control" id="description" @bind-Value="cash.Description" />
+                    <ValidationMessage For="()=>cash.Description" />
+                </div>
+                <div class="mb-3">
+                    <label for="entry" class="form-label">Entry:</label>
+                    <InputSelect class="form-control" id="entry" @bind-Value="cash.Entry">
+                        <option value=""> Select a Entry</option>
+                        <option value="Debito">Debit</option>
+                        <option value="Credito">Credit</option>
+                    </InputSelect>
+                    <ValidationMessage For="()=>cash.Entry" />
+                </div>
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Anount:</label>
+                    <InputNumber class="form-control" id="amount" @bind-Value="cash.Amount" />
+                    <ValidationMessage For="()=>cash.Amount" />
+                </div>
+                <div class="mb-3">
+                    <label for="date" class="form-label">Date:</label>
+                    <InputDate class="form-control" id="date" @bind-Value="cash.Date" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a role="button" class="btn btn-secondary" href="cashList">Cancel</a>
+            </EditForm>
+        </div>
+    </div>
+}
+@code
+{
+    [Parameter]
+    public string? Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private CashFlowDetails? cash { get; set; }
+
+    private string title = string.Empty;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (cash is not null)
+        {
+            return;
+        }
+
+        if (Id is not null)
+        {
+
+            cash = await CashFlowClient.GetCashFlowAsync(Id);
+            title = $"Edit {cash.Description}";
+        }
+        else
+        {
+            cash = new()
+                {
+                    Description = string.Empty,
+                    Date = DateTime.UtcNow
+                };
+            title = "New Cash Flow";
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //genres =await  GenresClient.GetGenresAsync();
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        ArgumentNullException.ThrowIfNull(cash);
+
+        if (Id is null)
+        {
+            await CashFlowClient.AddCashFlowAsync(cash);
+        }
+        else
+        {
+            cash.CashFlowId = Id;
+            await CashFlowClient.UpdateCashFlowAsync(cash);
+        }
+
+        NavigationManager.NavigateTo("cashList");
+    }
+}

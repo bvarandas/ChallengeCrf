@@ -1,6 +1,24 @@
-﻿@inherits LayoutComponentBase
+﻿@using CashFlow.Frontend.Components.Pages
+@inherits LayoutComponentBase
 
-<NavMenu></NavMenu>
+<TabControl >
+  <TabPage Text="Cash Flow">
+    
+    <NavMenu TitleNavbar="Cash Flow"></NavMenu>
+    <div class="container">
+        <CashList />
+    </div>
+    
+  </TabPage>
+  <TabPage Text="Daily Consolidated">
+    <NavMenu TitleNavbar="Daily Consolidated"></NavMenu>
+    <div class="container">
+        <DailyList />
+    </div>
+  </TabPage>
+</TabControl>
+
+
 <div class="container">
 @Body
-</div>
+</div> 

@@ -5,20 +5,20 @@ namespace ChallengeCrf.Application.EventSourceNormalizes;
 
 public class CashFlowHistory
 {
-    public static IList<CashFlowHistoryData> HistoryData { get; set; } = null!;
+    public static IList<CashFlowHistoryDto> HistoryData { get; set; } = null!;
 
-    public static IList<CashFlowHistoryData> ToJavaScriptRegisterHistory(IList<StoredEvent> storedEvents)
+    public static IList<CashFlowHistoryDto> ToJavaScriptRegisterHistory(IList<StoredEvent> storedEvents)
     {
-        HistoryData = new List<CashFlowHistoryData>();
+        HistoryData = new List<CashFlowHistoryDto>();
         RegisterHistoryDeserializer(storedEvents);
 
         var sorted = HistoryData.OrderBy(c => c.When);
-        var list = new List<CashFlowHistoryData>();
-        var last = new CashFlowHistoryData();
+        var list = new List<CashFlowHistoryDto>();
+        var last = new CashFlowHistoryDto();
 
         foreach (var change in sorted)
         {
-            var jsSlot = new CashFlowHistoryData
+            var jsSlot = new CashFlowHistoryDto
             {
                 RegisterId = change.RegisterId == string.Empty || change.RegisterId == last.RegisterId? "": change.RegisterId,
                 Description = string.IsNullOrWhiteSpace(change.Description) || change.Description == last.Description ? "" : change.Description,
@@ -39,7 +39,7 @@ public class CashFlowHistory
     {
         foreach (var e in storedEvents)
         {
-            var slot = new CashFlowHistoryData();
+            var slot = new CashFlowHistoryDto();
             dynamic values;
 
             switch (e.MessageType)

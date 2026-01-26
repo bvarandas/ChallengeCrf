@@ -1,5 +1,4 @@
-﻿using ChallengeCrf.Domain.Constants;
-using ChallengeCrf.Domain.Interfaces;
+﻿using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,8 +39,10 @@ public class OutboxProcessorService : BackgroundService
                         var cash = JsonSerializer.Deserialize<CashFlow>(message.Content);
 
                         var envelopeMessage = new EnvelopeMessage<CashFlow>(cash);
+
                         envelopeMessage.LastTransaction = DateTime.Now;
-                        envelopeMessage.Action = UserAction.Insert;
+
+                        envelopeMessage.Action = message.UserAction;
 
                         await messageBroker.PublishMessageAsync(envelopeMessage);
 

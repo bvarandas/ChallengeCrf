@@ -8,11 +8,11 @@ public class CashFlowClient(HttpClient httpClient)
     public async Task<CashFlowSummary[]> GetCashFlowAsync()
         => await httpClient.GetFromJsonAsync<CashFlowSummary[]>("cashflow/") ?? [];
    
-    public async Task AddCashFlowAsync(CashFlowDetails game)
-        => await httpClient.PostAsJsonAsync("cashflow/", game);
+    public async Task AddCashFlowAsync(CashFlowDetails cash)
+        => await httpClient.PostAsJsonAsync("cashflow/", cash);
 
     public async Task<CashFlowDetails> GetCashFlowAsync(string id)
-        => await httpClient.GetFromJsonAsync<CashFlowDetails>($"cashflow/{id}") ?? throw new Exception("Could not find game!");
+        => await httpClient.GetFromJsonAsync<CashFlowDetails>($"cashflow/{id}") ?? throw new Exception("Could not find Cash!");
 
     public async Task UpdateCashFlowAsync(CashFlowDetails updatedCash)
         => await httpClient.PutAsJsonAsync($"cashflow/{updatedCash.CashFlowId}", updatedCash);

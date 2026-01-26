@@ -1,7 +1,7 @@
 using AutoMapper;
 using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.Dto;
 using ChallengeCrf.Application.Interfaces;
-using ChallengeCrf.Application.ViewModel;
 using ChallengeCrf.Appplication.Interfaces;
 using ChallengeCrf.Domain.Bus;
 using ChallengeCrf.Domain.Constants;
@@ -153,7 +153,8 @@ public class WorkerConsumer : BackgroundService, IWorkerConsumer
 
                 case UserAction.Get:
                     var cash = await _flowService.GetCashFlowyIDAsync(message.CashFlowId);
-                    var list = new List<CashFlowViewModel>();
+
+                    var list = new List<CashFlowDto>();
                     if (cash is not null)
                     {
                         list.Add(cash);

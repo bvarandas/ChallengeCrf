@@ -1,5 +1,6 @@
 using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Application.Services;
+using ChallengeCrf.Appplication.Interfaces;
 using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Infra.CrossCutting.Bus;
@@ -37,6 +38,7 @@ IHost host = Host.CreateDefaultBuilder(args)
 
             services.AddSingleton<IWorkerProducer, WorkerProducer>();
             services.AddSingleton<ICashFlowService, CashFlowService>();
+            services.AddSingleton<IDailyConsolidatedService, DailyConsolidatedService>();
             services.AddSingleton<IOutboxCache, OutboxCache>();
             services.AddSingleton<ICashFlowRepository, CashFlowRepository>();
             services.AddSingleton<IQueueProducer, QueueProducer>();

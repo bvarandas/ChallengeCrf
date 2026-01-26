@@ -1,5 +1,5 @@
-﻿using ChallengeCrf.Application.Interfaces;
-using ChallengeCrf.Application.ViewModel;
+﻿using ChallengeCrf.Application.Dto;
+using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Models;
 using Microsoft.Extensions.Options;
@@ -64,7 +64,7 @@ public class WorkerProducer : IWorkerProducer
 
     }
 
-    public Task PublishMessages(List<CashFlowViewModel> messageList)
+    public Task PublishMessages(List<CashFlowDto> messageList)
     {
         try
         {

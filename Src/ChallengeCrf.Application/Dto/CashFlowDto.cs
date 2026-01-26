@@ -1,16 +1,15 @@
 ﻿using ProtoBuf;
-using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace ChallengeCrf.Application.ViewModel;
+namespace ChallengeCrf.Application.Dto;
 
 [ProtoContract]
-public class CashFlowViewModel
+public class CashFlowDto
 {
     [Key]
     [ProtoMember(1)]
-    public string CashFlowId { get; set; }=string.Empty;
+    public string CashFlowId { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "A Descrição é necessária")]
     [MinLength(2)]
@@ -47,7 +46,8 @@ public class CashFlowViewModel
     [ProtoMember(7)]
     public string UserAction { get; set; } = string.Empty;
 
-    public CashFlowViewModel(string cashFlowId, string description, double amount, string entry, DateTime date, string userAction)
+
+    public CashFlowDto(string cashFlowId, string description, double amount, string entry, DateTime date, string userAction)
     {
         CashFlowId = cashFlowId;
         Description = description;
@@ -57,6 +57,6 @@ public class CashFlowViewModel
         UserAction = userAction;
     }
 
-    public CashFlowViewModel()
+    public CashFlowDto()
     { }
 }

@@ -17,17 +17,7 @@ public sealed class CashFlow
     public string CashFlowIdTemp { get; set; }
 
     [ProtoMember(1)]
-    public string CashFlowId
-    {
-        get
-        {
-            return CashFlowIdTemp;
-        }
-        set
-        {
-            CashFlowIdTemp = value;
-        }
-    }
+    public string CashFlowId { get; set; }
 
     [ProtoMember(2)]
     public string Description { get; set; } = string.Empty;
@@ -44,13 +34,14 @@ public sealed class CashFlow
 
     [ProtoMember(7)]
     public DailyConsolidated DailyConsolidated { get; set; } = null!;
-    public CashFlow(string id, string cashFlowId, string description, double cashValue, string entry, DateTime date)
+    public CashFlow(string cashFlowIdTemp, string cashFlowId, string description, double cashValue, string entry, DateTime date)
     {
-        Id = new ObjectId(id);
+        Id = new ObjectId(cashFlowIdTemp);
         CashFlowId = cashFlowId;
         Description = description;
         Amount = cashValue;
         Entry = entry;
+        CashFlowIdTemp = cashFlowIdTemp;
         Date = date;
     }
 

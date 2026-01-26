@@ -31,5 +31,5 @@ public class CashFlowDetails
     [Required(ErrorMessage ="The Entry field is required.")]
     public string Entry { get; set;} = string.Empty;
 
-    public DateOnly Date { get; set;}
+    public DateTime Date { get; set;}
 }

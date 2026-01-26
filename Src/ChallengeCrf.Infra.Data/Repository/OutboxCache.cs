@@ -3,7 +3,6 @@ using ChallengeCrf.Domain.Models;
 using FluentResults;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 using StackExchange.Redis;
 using System.Text.Json;
 
@@ -52,29 +51,19 @@ namespace ChallengeCrf.Infra.Data.Repository
             return Result.Ok(result);
         }
 
-        public async Task<Result> UpsertCashflowAsync(CashFlow cash)
+        public async Task<Result> UpsertCashflowAsync(OutboxMessage outboxMessage, string cashFlowIdTemp)
         {
             try
             {
                 IDatabase db = _dragonfly.GetDatabase();
                 ITransaction transaction = db.CreateTransaction();
 
-                cash.Id = ObjectId.Parse(cash.CashFlowId);
-
-                var outboxMessage = new OutboxMessage
-                {
-                    Id = Guid.NewGuid(),
-                    Type = cash.GetType().FullName,
-                    Content = JsonSerializer.Serialize(cash),
-                    OccurredOnUtc = DateTime.UtcNow,
-                };
-
-                RedisValue value = new RedisValue(JsonSerializer.Serialize<CashFlow>(cash));
+                RedisValue value = new RedisValue(outboxMessage.Content);
                 RedisValue valueOutbox = new RedisValue(JsonSerializer.Serialize(outboxMessage));
 
-                _ = transaction.HashSetAsync(keycash, new HashEntry[] { new HashEntry(new RedisValue(cash.CashFlowId), value) });
+                _ = transaction.HashSetAsync(keycash, new HashEntry[] { new HashEntry(new RedisValue(cashFlowIdTemp), value) });
 
-                _ = transaction.HashSetAsync(keyoutbox, new HashEntry[] { new HashEntry(new RedisValue(cash.CashFlowId), valueOutbox) });
+                _ = transaction.HashSetAsync(keyoutbox, new HashEntry[] { new HashEntry(new RedisValue(cashFlowIdTemp), valueOutbox) });
 
                 bool committed = await transaction.ExecuteAsync();
 
@@ -96,7 +85,7 @@ namespace ChallengeCrf.Infra.Data.Repository
 
             try
             {
-                RedisValue value = new RedisValue(cash.CashFlowId);
+                RedisValue value = new RedisValue(cash.CashFlowIdTemp);
 
                 _ = transaction.HashDeleteAsync(keycash, value);
 

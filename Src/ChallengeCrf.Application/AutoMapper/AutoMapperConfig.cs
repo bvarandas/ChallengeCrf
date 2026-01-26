@@ -8,8 +8,8 @@ public class AutoMapperConfig
     {
         return new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile(new DomainToViewModelMappingProfile());
-            cfg.AddProfile(new ViewModelToDomainMappingProfile());
+            cfg.AddProfile(new DomainToDtoMappingProfile());
+            cfg.AddProfile(new DtoToDomainMappingProfile());
         });
     }
 }

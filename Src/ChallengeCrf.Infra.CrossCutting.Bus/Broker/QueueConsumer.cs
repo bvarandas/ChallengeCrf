@@ -1,4 +1,5 @@
-﻿using ChallengeCrf.Domain.Extesions;
+﻿using ChallengeCrf.Application.Dto;
+using ChallengeCrf.Domain.Extesions;
 using ChallengeCrf.Domain.Interfaces;
 using ChallengeCrf.Domain.Models;
 using ChallengeCrf.Domain.ValueObjects;
@@ -107,7 +108,11 @@ public class QueueConsumer : BackgroundService, IQueueConsumer
         try
         {
             _logger.LogInformation("Chegou mensagem nova");
-            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlow>>();
+
+
+            var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<List<CashFlowDto>>();
+
+            //var messageList = e.Body.ToArray().DeserializeFromByteArrayProtobuf<CashFlow>();
 
             using (var scope = _serviceProvider.CreateScope())
             {

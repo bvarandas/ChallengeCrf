@@ -8,5 +8,6 @@ public abstract class CashFlowCommand : Command
     public double Amount { get; protected set; }
     public string Entry { get; protected set; } = string.Empty;
     public DateTime Date { get; protected set; }
-    public string Action { get;protected set; } = string.Empty;
+    public string Action { get; protected set; } = string.Empty;
+    public string CashFlowIdTemp { get; protected set; } = string.Empty;
 }

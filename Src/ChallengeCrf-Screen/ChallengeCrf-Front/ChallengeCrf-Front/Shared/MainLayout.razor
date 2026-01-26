@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager _navigationManager
+@inject HttpClient _httpClient
+
+<PageTitle>ChallengeCrf-Front</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <button class="btn btn-danger" @onclick="LogoutUser">Logout</button>
+            <button class="btn btn-primary" @onclick="LoginUser">Login</button>
+            @* <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a> *@
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+@code{
+    private async Task LogoutUser()
+    {
+        await _httpClient.GetAsync("logoutuser");
+
+        _navigationManager.NavigateTo("login", true);
+    }
+
+    private void LoginUser()
+    {
+        _navigationManager.NavigateTo("login", true);
+    }
+}

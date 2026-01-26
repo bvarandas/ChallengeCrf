@@ -23,6 +23,9 @@ namespace ChallengeCrf.Domain.Models
         [ProtoMember(6)]
         public string? Error { get; set; }
 
+        [ProtoMember(7)]
+        public string UserAction { get; set; }
+
         public OutboxMessage() { }
 
         public void MarkAsProcessed()

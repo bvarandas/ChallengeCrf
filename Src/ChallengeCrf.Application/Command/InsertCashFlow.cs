@@ -50,6 +50,7 @@ public class InsertCashFlowCache : CashFlowCommand
         Amount = cash.Amount;
         Entry = cash.Entry;
         Date = cash.Date;
+        CashFlowIdTemp = cash.CashFlowIdTemp;
         Action = UserAction.Insert;
     }
 

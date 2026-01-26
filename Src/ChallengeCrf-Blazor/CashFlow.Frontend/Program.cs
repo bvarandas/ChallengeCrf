@@ -8,9 +8,10 @@ builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 
-var cashFlowApiUrl = builder.Configuration["CashFlowApiUrl"] ?? throw new Exception("CashFlowApiUrl is not set");
+var apiUrl = builder.Configuration["CashFlowApiUrl"] ?? throw new Exception("CashFlowApiUrl is not set");
 
-builder.Services.AddHttpClient<CashFlowClient>(client=>client.BaseAddress = new Uri(cashFlowApiUrl));
+builder.Services.AddHttpClient<CashFlowClient>(client=>client.BaseAddress = new Uri(apiUrl));
+builder.Services.AddHttpClient<DailyConsolidatedClient>(client=>client.BaseAddress = new Uri(apiUrl));
 
 var app = builder.Build();
 

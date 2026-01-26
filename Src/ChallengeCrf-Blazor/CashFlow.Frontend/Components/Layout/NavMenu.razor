@@ -1,5 +1,10 @@
 <nav class="navbar bg-body-tertiary" data-bs-theme="dark">
   <div class="container">
-    <span class="navbar-brand mb-0 h1">Cash Flow</span>
+    <span class="navbar-brand mb-0 h1">@TitleNavbar</span>
   </div>
 </nav>
+
+@code{
+  [Parameter]
+  public string TitleNavbar {get; set;}=string.Empty;
+}

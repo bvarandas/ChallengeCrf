@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ChallengeCrf.Application.Commands;
+using ChallengeCrf.Application.Dto;
 using ChallengeCrf.Application.EventSourceNormalizes;
 using ChallengeCrf.Application.Interfaces;
 using ChallengeCrf.Application.ViewModel;
@@ -32,24 +33,28 @@ public class CashFlowService : ICashFlowService
         _logger = logger;
     }
 
-    public async Task<IAsyncEnumerable<CashFlowViewModel>> GetListAllAsync()
+    public async Task<IAsyncEnumerable<CashFlowDto>> GetListAllAsync()
     {
         _logger.LogInformation("Tentando ir no GetAllCashFlowAsync");
         var enumarable = await _cashFlowRepository.GetAllCashFlowAsync();
-        var listResult = new List<CashFlowViewModel>();
+        var listResult = new List<CashFlowDto>();
 
         await foreach (var item in enumarable.Value)
-            listResult.Add(_mapper.Map<CashFlowViewModel>(item));
+            listResult.Add(_mapper.Map<CashFlowDto>(item));
 
-        //var result = _mapper.Map<IAsyncEnumerable<CashFlow>, IAsyncEnumerable<CashFlowViewModel>>(await enumarable);
         return listResult.ToAsyncEnumerable();
     }
 
-    public async Task<CashFlowViewModel> GetCashFlowyIDAsync(string cashFlowId)
+    public async Task<CashFlowDto> GetCashFlowyIDAsync(string cashFlowId)
     {
         var cashFlow = await _cashFlowRepository.GetCashFlowByIDAsync(cashFlowId);
-        var result = _mapper.Map<CashFlowViewModel>(cashFlow);
-        return result;
+
+        if (cashFlow.IsSuccess)
+        {
+            var result = _mapper.Map<CashFlowDto>(cashFlow.Value);
+            return result;
+        }
+        return new CashFlowDto();
     }
 
     public async Task AddCashFlowAsync(CashFlowCommand command)
@@ -76,7 +81,7 @@ public class CashFlowService : ICashFlowService
         await _cashFlowRepository.DeleteCashFlowAsync(cashFlowId);
     }
 
-    public IList<CashFlowHistoryData> GetAllHistory(int cashFlowId)
+    public IList<CashFlowHistoryDto> GetAllHistory(int cashFlowId)
     {
         return CashFlowHistory.ToJavaScriptRegisterHistory(_eventStoreRepository.All(cashFlowId));
     }

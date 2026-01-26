@@ -1,5 +1,5 @@
 ﻿namespace ChallengeCrf.Application.ViewModel;
-public class CashFlowHistoryData
+public class CashFlowHistoryDto
 {
     public string Action { get; set; } = string.Empty;
     public string RegisterId { get; set; } = string.Empty;

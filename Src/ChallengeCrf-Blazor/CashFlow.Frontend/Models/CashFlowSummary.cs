@@ -12,5 +12,5 @@ public class CashFlowSummary
     public string description { get; set;}
     public decimal amount { get; set;}
     public string entry { get; set;}
-    public DateOnly date { get; set;}
+    public DateTime date { get; set;}
 }
